@@ -3,9 +3,9 @@ using DataStreaming.Services;
 namespace DataStreaming.Common.Protocols.Factories;
 
 //todo: may be implement some tricky IClientProtocol later
-public class ImageRetranslationProtocolFactory : IProtocolFactory
+public class FileRetranslationProtocolFactory : IProtocolFactory
 {
-    private ImageRetranslationProtocolFactory()
+    private FileRetranslationProtocolFactory()
     {
     }
 
@@ -13,5 +13,5 @@ public class ImageRetranslationProtocolFactory : IProtocolFactory
 
     public IServerProtocol CreateServerProtocol() => new RetranslationServerProto();
 
-    public static IProtocolFactory Create() => new ImageRetranslationProtocolFactory();
+    public static IProtocolFactory Create() => new FileRetranslationProtocolFactory();
 }
