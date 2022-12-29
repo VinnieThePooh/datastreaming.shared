@@ -12,18 +12,18 @@ public static class RetranslationUtility
     /// </summary>
     /// <param name="newMessage"></param>
     /// <param name="stream"></param>
-    /// <param name="preambulaReserveSize">512 bytes - MAX for dynamic name (up to 512 latin characters or 254 cyrillic). Plus extra 8 for dataLength</param>
+    /// <param name="preambleReserveSize">512 bytes - MAX for dynamic name (up to 512 latin characters or 254 cyrillic). Plus extra 8 for dataLength</param>
     /// <returns></returns>
-    public static PreambleReadResult ReadPreamble(Memory<byte> newMessage, NetworkStream stream, int preambulaReserveSize = 520)
+    public static PreambleReadResult ReadPreamble(Memory<byte> newMessage, NetworkStream stream, int preambleReserveSize = 520)
     {
         PreambleReadResult result = new();
         Memory<byte> reserve;
 
         //4 + n + 8 - required bytes to read preamble
         //single read operation
-        if (newMessage.Length < preambulaReserveSize)
+        if (newMessage.Length < preambleReserveSize)
         {
-            reserve = new Memory<byte>(new byte[preambulaReserveSize]);
+            reserve = new Memory<byte>(new byte[preambleReserveSize]);
             newMessage.CopyTo(reserve);
             var free = reserve[newMessage.Length..];
             //assume we read free.Length always or 0 - according to protocol
