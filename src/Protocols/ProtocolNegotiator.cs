@@ -4,9 +4,9 @@ using ImageRetranslationShared.Models.Negotiation;
 
 namespace DataStreaming.Common.Protocols;
 
-public class Negotiator : IProtocolNegotiator
+public class ProtocolNegotiator : IProtocolNegotiator
 {
-    public Negotiator(TcpClient party)
+    public ProtocolNegotiator(TcpClient party)
     {
         Party = party ?? throw new ArgumentNullException(nameof(party));
     }
