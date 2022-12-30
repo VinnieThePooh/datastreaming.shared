@@ -137,8 +137,8 @@ public class RetranslationServerProto : IServerProtocol
         ImageUploaded?.Invoke(this,
             new ImageUploadedEventArgs
             {
-                ImageData = memoryStream.ToArray(),
-                ImageNameData = nameBytes,
+                FileData = memoryStream.ToArray(),
+                FileNameData = nameBytes,
                 Uploader = party.GetRemoteEndpoint()!,
                 MessageOrderNumber = iterInfo.MessageOrderNumber,
                 BatchSize = iterInfo.BatchSize
