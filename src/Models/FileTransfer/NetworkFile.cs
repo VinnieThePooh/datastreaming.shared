@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace ImageRetranslationShared.Models;
+namespace ImageRetranslationShared.Models.FileTransfer;
 
 public class NetworkFile
 {

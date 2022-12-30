@@ -1,4 +1,4 @@
-namespace ImageRetranslationShared.Models;
+namespace ImageRetranslationShared.Models.FileTransfer;
 
 public struct PreambleReadResult
 {

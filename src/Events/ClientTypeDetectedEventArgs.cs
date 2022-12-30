@@ -1,6 +1,6 @@
-using DataStreaming.Common.Constants;
+using ImageRetranslationShared.Constants;
 
-namespace DataStreaming.Common.Events;
+namespace ImageRetranslationShared.Events;
 
 public class ClientTypeDetectedEventArgs
 {

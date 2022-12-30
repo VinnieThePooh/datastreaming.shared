@@ -1,4 +1,4 @@
-namespace DataStreaming.Common.Extensions;
+namespace ImageRetranslationShared.Extensions;
 
 public static class TaskExtensions
 {

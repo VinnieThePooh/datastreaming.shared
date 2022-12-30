@@ -1,7 +1,7 @@
-using DataStreaming.Common.Events;
-using ImageRetranslationShared.Models;
+using ImageRetranslationShared.Events;
+using ImageRetranslationShared.Models.FileTransfer;
 
-namespace DataStreaming.Services;
+namespace ImageRetranslationShared.Services.Interfaces;
 
 public interface IFileReceiver : IAsyncDisposable
 {

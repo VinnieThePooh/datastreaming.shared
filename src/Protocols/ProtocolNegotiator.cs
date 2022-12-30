@@ -1,8 +1,8 @@
 ﻿using System.Net.Sockets;
-using DataStreaming.Services;
 using ImageRetranslationShared.Models.Negotiation;
+using ImageRetranslationShared.Protocols.Interfaces;
 
-namespace DataStreaming.Common.Protocols;
+namespace ImageRetranslationShared.Protocols;
 
 public class ProtocolNegotiator : IProtocolNegotiator
 {

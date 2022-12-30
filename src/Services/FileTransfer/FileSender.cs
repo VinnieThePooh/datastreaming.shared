@@ -1,11 +1,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using DataStreaming.Common.Constants;
-using DataStreaming.Common.Settings;
-using DataStreaming.Common.Extensions;
+using ImageRetranslationShared.Constants;
+using ImageRetranslationShared.Extensions;
+using ImageRetranslationShared.Services.Interfaces;
+using ImageRetranslationShared.Settings;
 
-namespace DataStreaming.Services;
+namespace ImageRetranslationShared.Services.FileTransfer;
 
 public class FileSender : IFileSender
 {

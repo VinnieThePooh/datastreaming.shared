@@ -1,12 +1,13 @@
 using System.Net.Sockets;
-using DataStreaming.Common.Constants;
-using DataStreaming.Common.Events;
-using DataStreaming.Common.Extensions;
-using DataStreaming.Common.Settings;
+using ImageRetranslationShared.Constants;
+using ImageRetranslationShared.Events;
+using ImageRetranslationShared.Extensions;
 using ImageRetranslationShared.Infrastructure;
-using ImageRetranslationShared.Models;
+using ImageRetranslationShared.Models.FileTransfer;
+using ImageRetranslationShared.Protocols.Interfaces;
+using ImageRetranslationShared.Settings;
 
-namespace DataStreaming.Common.Protocols;
+namespace ImageRetranslationShared.Protocols;
 
 public class RetranslationServerProto : IServerProtocol
 {

@@ -3,14 +3,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DataStreaming.Common.Constants;
-using DataStreaming.Common.Events;
-using DataStreaming.Common.Extensions;
-using DataStreaming.Common.Settings;
+using ImageRetranslationShared.Constants;
+using ImageRetranslationShared.Events;
+using ImageRetranslationShared.Extensions;
 using ImageRetranslationShared.Infrastructure;
-using ImageRetranslationShared.Models;
+using ImageRetranslationShared.Models.FileTransfer;
+using ImageRetranslationShared.Services.Interfaces;
+using ImageRetranslationShared.Settings;
 
-namespace DataStreaming.Services;
+namespace ImageRetranslationShared.Services.FileTransfer;
 
 public class FileReceiver : IFileReceiver
 {

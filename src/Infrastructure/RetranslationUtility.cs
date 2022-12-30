@@ -1,6 +1,7 @@
 using System.Net.Sockets;
-using DataStreaming.Common.Extensions;
+using ImageRetranslationShared.Extensions;
 using ImageRetranslationShared.Models;
+using ImageRetranslationShared.Models.FileTransfer;
 
 namespace ImageRetranslationShared.Infrastructure;
 

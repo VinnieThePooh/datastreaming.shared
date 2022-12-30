@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace DataStreaming.Common.Events;
+namespace ImageRetranslationShared.Events;
 
 public class ImageUploadedEventArgs
 {

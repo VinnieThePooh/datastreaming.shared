@@ -1,6 +1,6 @@
-﻿using DataStreaming.Services;
+﻿using ImageRetranslationShared.Protocols.Interfaces;
 
-namespace DataStreaming.Common.Protocols;
+namespace ImageRetranslationShared.Services.Interfaces;
 
 public interface IHasNegotiationSupport
 {

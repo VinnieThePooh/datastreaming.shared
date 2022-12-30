@@ -1,6 +1,6 @@
 ﻿using ImageRetranslationShared.Models.Negotiation;
 
-namespace DataStreaming.Common.Protocols;
+namespace ImageRetranslationShared.Protocols.Interfaces;
 
 public interface IHasProtocolVersion
 {
