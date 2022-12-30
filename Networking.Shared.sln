@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStreaming.Shared", "..\src\DataStreaming.Shared.csproj", "{80FAEF74-F8DC-482B-9909-9660482222D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStreaming.Shared", "src/DataStreaming.Shared\DataStreaming.Shared.csproj", "{80FAEF74-F8DC-482B-9909-9660482222D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
