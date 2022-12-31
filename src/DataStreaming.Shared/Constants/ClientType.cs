@@ -1,4 +1,4 @@
-namespace DataStreaming.Common.Constants;
+namespace ImageRetranslationShared.Constants;
 
 public enum ClientType : byte
 {
