@@ -1,4 +1,4 @@
-namespace ImageRetranslationShared.Services.Interfaces;
+namespace DataStreaming.Services.Interfaces;
 
 public interface IFileSender : IAsyncDisposable
 {

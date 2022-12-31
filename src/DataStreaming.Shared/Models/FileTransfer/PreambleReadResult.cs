@@ -1,4 +1,4 @@
-namespace DataStreaming.Models;
+namespace DataStreaming.Models.FileTransfer;
 
 public struct PreambleReadResult
 {

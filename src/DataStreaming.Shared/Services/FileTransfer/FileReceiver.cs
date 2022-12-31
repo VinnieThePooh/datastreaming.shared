@@ -3,14 +3,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DataStreaming.Common.Constants;
 using DataStreaming.Common.Events;
-using DataStreaming.Common.Extensions;
-using DataStreaming.Common.Settings;
+using DataStreaming.Constants;
+using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
 using DataStreaming.Models;
+using DataStreaming.Settings;
 
-namespace DataStreaming.Services;
+namespace DataStreaming.Services.FileTransfer;
 
 public class FileReceiver : IFileReceiver
 {

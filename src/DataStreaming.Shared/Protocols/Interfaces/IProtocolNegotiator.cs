@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using DataStreaming.Models.Negotiation;
 
-namespace ImageRetranslationShared.Protocols.Interfaces;
+namespace DataStreaming.Protocols.Interfaces;
 
 public interface IProtocolNegotiator : IAsyncDisposable
 {

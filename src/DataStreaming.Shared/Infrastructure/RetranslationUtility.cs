@@ -1,6 +1,6 @@
 using System.Net.Sockets;
-using DataStreaming.Common.Extensions;
-using DataStreaming.Models;
+using DataStreaming.Extensions;
+using DataStreaming.Models.FileTransfer;
 
 namespace DataStreaming.Infrastructure;
 

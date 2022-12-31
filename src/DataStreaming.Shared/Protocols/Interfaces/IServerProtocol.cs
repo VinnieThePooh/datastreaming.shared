@@ -1,4 +1,4 @@
-namespace ImageRetranslationShared.Protocols.Interfaces;
+namespace DataStreaming.Protocols.Interfaces;
 
 public interface IServerProtocol : IProtocol
 {

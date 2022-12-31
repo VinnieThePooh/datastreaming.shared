@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
-using DataStreaming.Services;
 using DataStreaming.Models.Negotiation;
+using DataStreaming.Protocols.Interfaces;
 
 namespace DataStreaming.Common.Protocols;
 

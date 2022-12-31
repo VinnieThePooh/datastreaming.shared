@@ -1,10 +1,11 @@
 using System.Net.Sockets;
-using DataStreaming.Common.Constants;
-using DataStreaming.Common.Events;
-using DataStreaming.Common.Extensions;
-using DataStreaming.Common.Settings;
+using DataStreaming.Constants;
+using DataStreaming.Events;
+using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
 using DataStreaming.Models;
+using DataStreaming.Protocols.Interfaces;
+using DataStreaming.Settings;
 
 namespace DataStreaming.Common.Protocols;
 
@@ -136,8 +137,8 @@ public class RetranslationServerProto : IServerProtocol
         ImageUploaded?.Invoke(this,
             new ImageUploadedEventArgs
             {
-                ImageData = memoryStream.ToArray(),
-                ImageNameData = nameBytes,
+                FileData = memoryStream.ToArray(),
+                FileNameData = nameBytes,
                 Uploader = party.GetRemoteEndpoint()!,
                 MessageOrderNumber = iterInfo.MessageOrderNumber,
                 BatchSize = iterInfo.BatchSize

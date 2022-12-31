@@ -1,5 +1,6 @@
-using ImageRetranslationShared.Protocols.Interfaces;
-using ImageRetranslationShared.Services.Interfaces;
+using DataStreaming.Protocols.Interfaces;
+using DataStreaming.Services;
+using DataStreaming.Services.Interfaces;
 
 namespace DataStreaming.Common.Protocols.Factories;
 
