@@ -1,4 +1,4 @@
-﻿using ImageRetranslationShared.Models.Negotiation;
+﻿using DataStreaming.Models.Negotiation;
 
 namespace DataStreaming.Common.Protocols;
 

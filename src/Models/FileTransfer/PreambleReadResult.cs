@@ -1,4 +1,4 @@
-namespace ImageRetranslationShared.Models;
+namespace DataStreaming.Models;
 
 public struct PreambleReadResult
 {

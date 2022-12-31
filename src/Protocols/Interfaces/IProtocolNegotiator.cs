@@ -1,5 +1,5 @@
 ﻿using System.Net.Sockets;
-using ImageRetranslationShared.Models.Negotiation;
+using DataStreaming.Models.Negotiation;
 
 namespace DataStreaming.Services;
 

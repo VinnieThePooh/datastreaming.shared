@@ -7,8 +7,8 @@ using DataStreaming.Common.Constants;
 using DataStreaming.Common.Events;
 using DataStreaming.Common.Extensions;
 using DataStreaming.Common.Settings;
-using ImageRetranslationShared.Infrastructure;
-using ImageRetranslationShared.Models;
+using DataStreaming.Infrastructure;
+using DataStreaming.Models;
 
 namespace DataStreaming.Services;
 

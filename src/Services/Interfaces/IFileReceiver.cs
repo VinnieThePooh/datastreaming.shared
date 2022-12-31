@@ -1,5 +1,5 @@
 using DataStreaming.Common.Events;
-using ImageRetranslationShared.Models;
+using DataStreaming.Models;
 
 namespace DataStreaming.Services;
 

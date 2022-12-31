@@ -1,8 +1,8 @@
 using System.Net.Sockets;
 using DataStreaming.Common.Extensions;
-using ImageRetranslationShared.Models;
+using DataStreaming.Models;
 
-namespace ImageRetranslationShared.Infrastructure;
+namespace DataStreaming.Infrastructure;
 
 public static class RetranslationUtility
 {

@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace ImageRetranslationShared.Models;
+namespace DataStreaming.Models;
 
 public class NetworkFile
 {

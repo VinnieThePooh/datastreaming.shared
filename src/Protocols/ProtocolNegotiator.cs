@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 using DataStreaming.Services;
-using ImageRetranslationShared.Models.Negotiation;
+using DataStreaming.Models.Negotiation;
 
 namespace DataStreaming.Common.Protocols;
 

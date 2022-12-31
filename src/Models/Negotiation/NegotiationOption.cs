@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace ImageRetranslationShared.Models.Negotiation;
+namespace DataStreaming.Models.Negotiation;
 
 public struct NegotiationOption
 {

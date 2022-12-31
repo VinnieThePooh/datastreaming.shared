@@ -1,4 +1,4 @@
-namespace ImageRetranslationShared.Models;
+namespace DataStreaming.Models;
 /// <summary>
 /// Commonly used structure for assembling streaming messages on the receiver side
 /// </summary>
