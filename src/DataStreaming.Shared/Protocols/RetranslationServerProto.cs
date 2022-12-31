@@ -44,17 +44,7 @@ public class RetranslationServerProto : IServerProtocol
 
         for (int i = 0; i < numberOfFiles; i++)
         {
-            try
-            {
-                iterInfo = await ReadFileData(party, iterInfo, token);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-                throw;
-            }
-
+            iterInfo = await ReadFileData(party, iterInfo, token);
             if (iterInfo.IsDisconnectedPrematurely)
                 break;
         }
