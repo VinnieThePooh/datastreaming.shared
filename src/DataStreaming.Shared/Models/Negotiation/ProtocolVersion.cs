@@ -1,6 +1,6 @@
 ﻿namespace DataStreaming.Models.Negotiation;
 
-public struct ProtocolVersion : IEquatable<ProtocolVersion>
+public readonly struct ProtocolVersion : IEquatable<ProtocolVersion>
 {
     public ProtocolVersion(byte major, byte minor)
     {

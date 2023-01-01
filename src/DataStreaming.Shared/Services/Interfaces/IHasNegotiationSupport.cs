@@ -7,5 +7,5 @@ public interface IHasNegotiationSupport
     IProtocolNegotiator Negotiator { get; }
 
     //who dictates options
-    public bool IsClientInitiator { get; set; }
+    public bool IsClientInitiator { get; }
 }
