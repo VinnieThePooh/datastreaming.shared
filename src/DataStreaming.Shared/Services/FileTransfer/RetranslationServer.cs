@@ -53,7 +53,7 @@ public class RetranslationServer : IRetranslationServer
     {
         var proto = (RetranslationServerProto)factory.CreateServerProtocol();
         proto.RetranslationSettings = RetranslationSettings;
-        proto.ImageUploaded += OnImageUploaded;
+        proto.FileUploaded += OnImageUploaded;
 
         var ep = client.GetRemoteEndpoint()!;
         var clientProxy = new ClientProxy(ep, proto);
@@ -61,7 +61,7 @@ public class RetranslationServer : IRetranslationServer
         return clientProxy;
     }
 
-    private async void OnImageUploaded(object? sender, ImageUploadedEventArgs e)
+    private async void OnImageUploaded(object? sender, FileUploadedEventArgs e)
     {
         var dataLengthBytes = ((long)e.FileData.Length).ToNetworkBytes();
         var nameLengthBytes = e.FileNameData.Length.ToNetworkBytes();

@@ -2,7 +2,7 @@ using System.Net;
 
 namespace DataStreaming.Events;
 
-public class ImageUploadedEventArgs
+public class FileUploadedEventArgs
 {
     public IPEndPoint Uploader { get; init; }
 
