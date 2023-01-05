@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace DataStreaming.Common.Events;
+namespace DataStreaming.Events;
 
 public class BatchLoadedEventArgs : EventArgs
 {

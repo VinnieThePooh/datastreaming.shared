@@ -3,11 +3,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DataStreaming.Common.Events;
 using DataStreaming.Constants;
+using DataStreaming.Events;
 using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
 using DataStreaming.Models;
+using DataStreaming.Models.FileTransfer;
+using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;
 
 namespace DataStreaming.Services.FileTransfer;

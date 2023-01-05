@@ -1,4 +1,4 @@
-namespace DataStreaming.Models;
+namespace DataStreaming.Models.FileTransfer;
 /// <summary>
 /// Commonly used structure for assembling streaming messages on the receiver side
 /// </summary>
