@@ -8,6 +8,7 @@ using DataStreaming.Constants;
 using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
 using DataStreaming.Models;
+using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;
 
 namespace DataStreaming.Services.FileTransfer;
@@ -71,7 +72,7 @@ public class FileReceiver : IFileReceiver
 
             if (streamingInfo.IsEndOfBatch)
             {
-                BatchLoaded?.Invoke(this, new BatchLoadedEventArgs(fileNames, streamingInfo.NetworkFile.Origin));
+                BatchLoaded?.Invoke(this, new BatchLoadedEventArgs(fileNames, networkFile.Origin));
                 fileNames.Clear();
                 streamingInfo = StreamingInfo.DefaultWithBuffer(memory);
             }
@@ -180,18 +181,7 @@ public class FileReceiver : IFileReceiver
         Memory<byte> newMessageData = Memory<byte>.Empty;
 
         if (toWrite < read)
-        {
-            try
-            {
-                newMessageData = iterInfo.IsEndOfBatch ? memory[(toWrite + 16)..read] : memory[(toWrite + 8)..read];
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-                throw;
-            }
-        }
+            newMessageData = iterInfo.IsEndOfBatch ? memory[(toWrite + 16)..read] : memory[(toWrite + 8)..read];
 
         iterInfo.NewMessageData = newMessageData;
         return iterInfo;

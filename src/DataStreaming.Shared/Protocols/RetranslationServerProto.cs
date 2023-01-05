@@ -12,7 +12,7 @@ namespace DataStreaming.Common.Protocols;
 public class RetranslationServerProto : IServerProtocol
 {
     public EventHandler<ClientTypeDetectedEventArgs>? ClientTypeDetected;
-    public EventHandler<ImageUploadedEventArgs>? ImageUploaded;
+    public EventHandler<FileUploadedEventArgs>? FileUploaded;
 
     public FileRetranslationSettings? RetranslationSettings { get; set; }
 
@@ -124,8 +124,8 @@ public class RetranslationServerProto : IServerProtocol
             totalRead += read;
         }
 
-        ImageUploaded?.Invoke(this,
-            new ImageUploadedEventArgs
+        FileUploaded?.Invoke(this,
+            new FileUploadedEventArgs
             {
                 FileData = memoryStream.ToArray(),
                 FileNameData = nameBytes,
