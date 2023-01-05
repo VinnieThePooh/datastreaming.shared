@@ -1,11 +1,11 @@
 using System.Net;
 using System.Net.Sockets;
-using DataStreaming.Common.Protocols;
 using DataStreaming.Constants;
 using DataStreaming.Events;
+using DataStreaming.Protocols;
 using DataStreaming.Services.FileTransfer;
 
-namespace DataStreaming.Models;
+namespace DataStreaming.Models.FileTransfer;
 
 public class ClientProxy
 {

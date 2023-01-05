@@ -2,7 +2,7 @@
 using DataStreaming.Models.Negotiation;
 using DataStreaming.Protocols.Interfaces;
 
-namespace DataStreaming.Common.Protocols;
+namespace DataStreaming.Protocols;
 
 public class ProtocolNegotiator : IProtocolNegotiator
 {

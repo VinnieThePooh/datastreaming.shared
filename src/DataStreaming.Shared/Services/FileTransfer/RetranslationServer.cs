@@ -1,12 +1,13 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using DataStreaming.Common.Protocols;
-using DataStreaming.Common.Protocols.Factories;
 using DataStreaming.Constants;
 using DataStreaming.Events;
 using DataStreaming.Extensions;
 using DataStreaming.Models;
+using DataStreaming.Models.FileTransfer;
+using DataStreaming.Protocols;
+using DataStreaming.Protocols.Factories;
 using DataStreaming.Protocols.Interfaces;
 using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;

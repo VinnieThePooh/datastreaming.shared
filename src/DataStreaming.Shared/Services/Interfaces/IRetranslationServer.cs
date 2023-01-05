@@ -1,5 +1,6 @@
 using System.Net;
 using DataStreaming.Models;
+using DataStreaming.Models.FileTransfer;
 
 namespace DataStreaming.Services.Interfaces;
 

@@ -1,8 +1,7 @@
 using DataStreaming.Protocols.Interfaces;
-using DataStreaming.Services;
 using DataStreaming.Services.Interfaces;
 
-namespace DataStreaming.Common.Protocols.Factories;
+namespace DataStreaming.Protocols.Factories;
 
 //todo: may be implement some tricky IClientProtocol later
 public class FileRetranslationProtocolFactory : IProtocolFactory
