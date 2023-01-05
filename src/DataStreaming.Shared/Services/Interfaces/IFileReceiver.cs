@@ -1,7 +1,7 @@
-using DataStreaming.Events;
-using DataStreaming.Models.FileTransfer;
+using DataStreaming.Common.Events;
+using DataStreaming.Models;
 
-namespace DataStreaming.Services.Interfaces;
+namespace DataStreaming.Services;
 
 public interface IFileReceiver : IAsyncDisposable
 {

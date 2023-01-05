@@ -3,11 +3,11 @@ using DataStreaming.Constants;
 using DataStreaming.Events;
 using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
-using DataStreaming.Models.FileTransfer;
+using DataStreaming.Models;
 using DataStreaming.Protocols.Interfaces;
 using DataStreaming.Settings;
 
-namespace DataStreaming.Protocols;
+namespace DataStreaming.Common.Protocols;
 
 public class RetranslationServerProto : IServerProtocol
 {

@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace DataStreaming.Models.FileTransfer;
+namespace DataStreaming.Models;
 
 public class NetworkFile
 {
