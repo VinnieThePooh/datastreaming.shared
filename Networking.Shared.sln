@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStreaming.Shared", "src/DataStreaming.Shared\DataStreaming.Shared.csproj", "{80FAEF74-F8DC-482B-9909-9660482222D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking.Shared.ClientTests", "Networking.Shared.ClientTests\Networking.Shared.ClientTests.csproj", "{6CFC203F-018B-46C4-91B1-1503A1F406C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networking.Shared.ServerTests", "Networking.Shared.ServerTests\Networking.Shared.ServerTests.csproj", "{CDE7ABFA-F026-43E0-9109-A511ECB5C3D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{80FAEF74-F8DC-482B-9909-9660482222D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80FAEF74-F8DC-482B-9909-9660482222D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80FAEF74-F8DC-482B-9909-9660482222D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CFC203F-018B-46C4-91B1-1503A1F406C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CFC203F-018B-46C4-91B1-1503A1F406C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CFC203F-018B-46C4-91B1-1503A1F406C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CFC203F-018B-46C4-91B1-1503A1F406C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE7ABFA-F026-43E0-9109-A511ECB5C3D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE7ABFA-F026-43E0-9109-A511ECB5C3D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE7ABFA-F026-43E0-9109-A511ECB5C3D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE7ABFA-F026-43E0-9109-A511ECB5C3D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
