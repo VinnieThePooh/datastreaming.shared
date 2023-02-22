@@ -10,9 +10,19 @@ public class FileRetranslationProtocolFactory : IProtocolFactory
     {
     }
 
-    public IClientProtocol CreateClientProtocol() => throw new NotSupportedException($"Not supported: Use {nameof(IFileSender)} or {nameof(IFileReceiver)} implementations instead");
+    public IClientProtocol CreateClientProtocol()
+    {
+        throw new NotSupportedException(
+            $"Not supported: Use {nameof(IFileSender)} or {nameof(IFileReceiver)} implementations instead");
+    }
 
-    public IServerProtocol CreateServerProtocol() => new RetranslationServerProto();
+    public IServerProtocol CreateServerProtocol()
+    {
+        return new RetranslationServerProto();
+    }
 
-    public static IProtocolFactory Create() => new FileRetranslationProtocolFactory();
+    public static IProtocolFactory Create()
+    {
+        return new FileRetranslationProtocolFactory();
+    }
 }

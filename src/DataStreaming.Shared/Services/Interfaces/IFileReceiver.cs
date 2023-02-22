@@ -1,5 +1,4 @@
 using DataStreaming.Events;
-using DataStreaming.Models;
 using DataStreaming.Models.FileTransfer;
 
 namespace DataStreaming.Services.Interfaces;

@@ -3,7 +3,7 @@ using DataStreaming.Protocols.Interfaces;
 
 namespace DataStreaming.Protocols.Handlers.RTT;
 
-public interface IRttMeteringHandler : IProtocol
+public interface IRttMeteringHandler : ISocketProtocol
 {
     RttMeteringType MeteringType { get; }
 }

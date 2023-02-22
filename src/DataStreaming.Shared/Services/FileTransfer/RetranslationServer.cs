@@ -4,7 +4,6 @@ using System.Text;
 using DataStreaming.Constants;
 using DataStreaming.Events;
 using DataStreaming.Extensions;
-using DataStreaming.Models;
 using DataStreaming.Models.FileTransfer;
 using DataStreaming.Protocols;
 using DataStreaming.Protocols.Factories;
@@ -22,6 +21,7 @@ public class RetranslationServer : IRetranslationServer
     {
         RetranslationSettings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
+
     public FileRetranslationSettings RetranslationSettings { get; }
 
     public Dictionary<IPEndPoint, ClientProxy> ClientProxies { get; } = new();
@@ -29,15 +29,16 @@ public class RetranslationServer : IRetranslationServer
     public async Task<bool> Start()
     {
         if (_cts is not null)
-                return false;
+            return false;
 
         _cts = new CancellationTokenSource();
-        IProtocolFactory protoFactory = FileRetranslationProtocolFactory.Create();
+        var protoFactory = FileRetranslationProtocolFactory.Create();
 
         var listener = new TcpListener(IPAddress.Any, RetranslationSettings.Port);
         listener.Start();
 
-        Console.WriteLine($"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{RetranslationSettings.Port}");
+        Console.WriteLine(
+            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{RetranslationSettings.Port}");
 
         while (!_cts.Token.IsCancellationRequested)
         {
@@ -48,6 +49,18 @@ public class RetranslationServer : IRetranslationServer
         }
 
         return true;
+    }
+
+    public Task<bool> Stop()
+    {
+        if (_cts is null)
+            return Task.FromResult(false);
+
+        _cts.Cancel();
+        _cts.Dispose();
+        _cts = null;
+
+        return Task.FromResult(true);
     }
 
     private ClientProxy CreateClientProxy(TcpClient client, IProtocolFactory factory)
@@ -69,24 +82,24 @@ public class RetranslationServer : IRetranslationServer
         var addressBytes = e.Uploader.Address.GetAddressBytes();
         var portBytes = e.Uploader.Port.ToNetworkBytes();
 
-        int mNumber = e.MessageOrderNumber;
-        int bSize = e.BatchSize;
+        var mNumber = e.MessageOrderNumber;
+        var bSize = e.BatchSize;
 
         var tasks = ClientProxies.Values
             .Where(p => p.ClientType == ClientType.Receiver)
             .Select(async receiver =>
-        {
-            var stream = receiver.Client.GetStream();
-            stream.Write(nameLengthBytes);
-            stream.Write(e.FileNameData);
-            stream.Write(dataLengthBytes);
-            await stream.WriteAsync(e.FileData);
-            stream.Write(addressBytes);
-            stream.Write(portBytes);
-            if (mNumber == bSize)
-                stream.Write(Prologs.EndOfBatch.ToNetworkBytes());
-            await stream.FlushAsync();
-        });
+            {
+                var stream = receiver.Client.GetStream();
+                stream.Write(nameLengthBytes);
+                stream.Write(e.FileNameData);
+                stream.Write(dataLengthBytes);
+                await stream.WriteAsync(e.FileData);
+                stream.Write(addressBytes);
+                stream.Write(portBytes);
+                if (mNumber == bSize)
+                    stream.Write(Prologs.EndOfBatch.ToNetworkBytes());
+                await stream.FlushAsync();
+            });
 
         try
         {
@@ -97,17 +110,5 @@ public class RetranslationServer : IRetranslationServer
         {
             Console.WriteLine(exception);
         }
-    }
-
-    public Task<bool> Stop()
-    {
-        if (_cts is null)
-            return Task.FromResult(false);
-
-        _cts.Cancel();
-        _cts.Dispose();
-        _cts = null;
-
-        return Task.FromResult(true);
     }
 }

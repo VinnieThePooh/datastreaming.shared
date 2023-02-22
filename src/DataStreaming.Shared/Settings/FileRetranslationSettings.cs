@@ -9,7 +9,10 @@ public class FileRetranslationSettings
 
     public uint BufferSize { get; set; } = 1024 * 8;
 
-    public override string ToString() => $"{Host}:{Port}";
-
     public static uint FallbackBufferSize => 1024 * 8;
+
+    public override string ToString()
+    {
+        return $"{Host}:{Port}";
+    }
 }

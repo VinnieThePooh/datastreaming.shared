@@ -11,6 +11,7 @@ public class BatchLoadedEventArgs : EventArgs
         Origin = origin;
         FileNames = fileNames.AsReadOnly();
     }
+
     public IReadOnlyCollection<string> FileNames { get; }
 
     //number of files within the batch

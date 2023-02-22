@@ -8,13 +8,17 @@ public static class RetranslationUtility
 {
     //preamble should actually be of a fixed size, but ok now
     /// <summary>
-    ///  Read variable length message preamble
+    ///     Read variable length message preamble
     /// </summary>
     /// <param name="newMessage"></param>
     /// <param name="stream"></param>
-    /// <param name="preambleReserveSize">512 bytes - MAX for dynamic name (up to 512 latin characters or 254 cyrillic). Plus extra 8 for dataLength</param>
+    /// <param name="preambleReserveSize">
+    ///     512 bytes - MAX for dynamic name (up to 512 latin characters or 254 cyrillic). Plus
+    ///     extra 8 for dataLength
+    /// </param>
     /// <returns></returns>
-    public static PreambleReadResult ReadPreamble(Memory<byte> newMessage, NetworkStream stream, int preambleReserveSize = 520)
+    public static PreambleReadResult ReadPreamble(Memory<byte> newMessage, NetworkStream stream,
+        int preambleReserveSize = 520)
     {
         PreambleReadResult result = new();
         Memory<byte> reserve;

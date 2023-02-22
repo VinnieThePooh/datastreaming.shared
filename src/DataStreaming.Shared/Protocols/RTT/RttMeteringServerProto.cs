@@ -3,9 +3,9 @@ using DataStreaming.Protocols.Interfaces;
 
 namespace DataStreaming.Protocols.RTT;
 
-public class RttMeteringServerProto : IServerProtocol
+public class RttMeteringServerProto : IServerSocketProtocol
 {
-    public Task DoCommunication(TcpClient party, CancellationToken token)
+    public Task DoCommunication(Socket party, CancellationToken token)
     {
         throw new NotImplementedException();
     }

@@ -1,6 +1,7 @@
 namespace DataStreaming.Models.FileTransfer;
+
 /// <summary>
-/// Commonly used structure for assembling streaming messages on the receiver side
+///     Commonly used structure for assembling streaming messages on the receiver side
 /// </summary>
 public struct StreamingInfo
 {
@@ -25,5 +26,8 @@ public struct StreamingInfo
 
     public static StreamingInfo DisconnectedPrematurely { get; } = new() { IsDisconnectedPrematurely = true };
 
-    public static StreamingInfo DefaultWithBuffer(Memory<byte> buffer) => new() { MessageOrderNumber = 1, BatchSize = 1, Buffer = buffer };
+    public static StreamingInfo DefaultWithBuffer(Memory<byte> buffer)
+    {
+        return new() { MessageOrderNumber = 1, BatchSize = 1, Buffer = buffer };
+    }
 }

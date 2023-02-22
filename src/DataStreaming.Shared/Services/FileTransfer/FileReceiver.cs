@@ -7,7 +7,6 @@ using DataStreaming.Constants;
 using DataStreaming.Events;
 using DataStreaming.Extensions;
 using DataStreaming.Infrastructure;
-using DataStreaming.Models;
 using DataStreaming.Models.FileTransfer;
 using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;
@@ -18,8 +17,6 @@ public class FileReceiver : IFileReceiver
 {
     private TcpClient? receiverParty;
 
-    public event EventHandler<BatchLoadedEventArgs>? BatchLoaded;
-
     public FileReceiver(FileRetranslationSettings networkSettings)
     {
         NetworkSettings = networkSettings ?? throw new ArgumentNullException(nameof(networkSettings));
@@ -27,9 +24,11 @@ public class FileReceiver : IFileReceiver
 
     public FileRetranslationSettings NetworkSettings { get; }
 
+    public event EventHandler<BatchLoadedEventArgs>? BatchLoaded;
+
     public async IAsyncEnumerable<NetworkFile> AwaitFiles([EnumeratorCancellation] CancellationToken token)
     {
-        receiverParty = new();
+        receiverParty = new TcpClient();
 
         try
         {
@@ -61,7 +60,7 @@ public class FileReceiver : IFileReceiver
 
             if (streamingInfo.IsDisconnectedPrematurely)
             {
-                Debug.WriteLine($"[FileReceiver]: RetranslationServer disconnected prematurely");
+                Debug.WriteLine("[FileReceiver]: RetranslationServer disconnected prematurely");
                 yield break;
             }
 
@@ -80,10 +79,21 @@ public class FileReceiver : IFileReceiver
         }
     }
 
+    public ValueTask DisposeAsync()
+    {
+        if (receiverParty is null)
+            return ValueTask.CompletedTask;
+
+        receiverParty.Close();
+        receiverParty = null;
+        return ValueTask.CompletedTask;
+    }
+
     //todo: try to refactor?
     //todo: templated later some way?
     //pattern detected for working with length-prefixed streams
-    private async ValueTask<StreamingInfo> ReadFileData(TcpClient party, StreamingInfo iterInfo, CancellationToken token)
+    private async ValueTask<StreamingInfo> ReadFileData(TcpClient party, StreamingInfo iterInfo,
+        CancellationToken token)
     {
         var memory = iterInfo.Buffer;
         var stream = party.GetStream();
@@ -94,8 +104,8 @@ public class FileReceiver : IFileReceiver
 
         long totalRead = 0;
         long leftToRead = 0;
-        int toWrite = 0;
-        int read = 0;
+        var toWrite = 0;
+        var read = 0;
 
         await using var memoryStream = new MemoryStream();
         var newMessage = iterInfo.NewMessageData;
@@ -142,7 +152,8 @@ public class FileReceiver : IFileReceiver
 
             if (read == 0)
             {
-                Console.WriteLine($"[FileReceiver]: RetranslationServer {party.GetRemoteEndpoint()} disconnected prematurely");
+                Console.WriteLine(
+                    $"[FileReceiver]: RetranslationServer {party.GetRemoteEndpoint()} disconnected prematurely");
                 stream.Close();
                 return StreamingInfo.DisconnectedPrematurely;
             }
@@ -165,7 +176,7 @@ public class FileReceiver : IFileReceiver
             await stream.ReadExactlyAsync(prologData, token);
         }
 
-        long prolog = prologData[8..].Span.GetHostOrderInt64();
+        var prolog = prologData[8..].Span.GetHostOrderInt64();
 
         var senderIp = new IPAddress(prologData[..4].Span);
         var portBytes = prologData[4..8].ToArray();
@@ -179,22 +190,12 @@ public class FileReceiver : IFileReceiver
         iterInfo.NetworkFile = new NetworkFile(fileName, memoryStream.ToArray(), sender);
         iterInfo.IsEndOfBatch = prolog.Equals(Prologs.EndOfBatch);
 
-        Memory<byte> newMessageData = Memory<byte>.Empty;
+        var newMessageData = Memory<byte>.Empty;
 
         if (toWrite < read)
             newMessageData = iterInfo.IsEndOfBatch ? memory[(toWrite + 16)..read] : memory[(toWrite + 8)..read];
 
         iterInfo.NewMessageData = newMessageData;
         return iterInfo;
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        if (receiverParty is null)
-            return ValueTask.CompletedTask;
-
-        receiverParty.Close();
-        receiverParty = null;
-        return ValueTask.CompletedTask;
     }
 }

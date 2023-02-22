@@ -3,7 +3,8 @@ namespace DataStreaming.Constants.RTT;
 public enum RttMeteringType
 {
     //stats aggregated within specified interval
-    RealtimeInterval,
+    AggregationInterval,
+
     //single packet is sent in specified period
-    SingleInterval
+    SinglePacket
 }

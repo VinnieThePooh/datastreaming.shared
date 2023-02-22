@@ -14,5 +14,8 @@ public struct NegotiationOption
 
     public ICollection<ProtocolVersion> Versions { get; } = new Collection<ProtocolVersion>();
 
-    public static NegotiationOption DefaultWithName(string name) => new(name, ProtocolVersion.Default);
+    public static NegotiationOption DefaultWithName(string name)
+    {
+        return new(name, ProtocolVersion.Default);
+    }
 }

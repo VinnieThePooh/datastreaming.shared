@@ -8,9 +8,12 @@ public class NegotiationResult
 
     public string NonNegotiationReason { get; set; }
 
-    public static NegotiationResult FromChosenOption(ChosenNegotiationOption chosen) => new() { ProtocolName = chosen.ProtocolName, ProtocolVersion = chosen.Version, Negotiated = true };
-
     public static NegotiationResult Failed => new() { Negotiated = false };
+
+    public static NegotiationResult FromChosenOption(ChosenNegotiationOption chosen)
+    {
+        return new() { ProtocolName = chosen.ProtocolName, ProtocolVersion = chosen.Version, Negotiated = true };
+    }
 
     public static NegotiationResult FailedWithReason(string reason)
     {

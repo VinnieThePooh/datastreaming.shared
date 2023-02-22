@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using DataStreaming.Constants;
+using DataStreaming.Extensions;
 using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;
-using DataStreaming.Extensions;
 
 namespace DataStreaming.Services.FileTransfer;
 
@@ -40,17 +40,6 @@ public class FileSender : IFileSender
         tcpClient.Close();
     }
 
-    private async Task SendFile(NetworkStream networkStream, string filePath, CancellationToken token)
-    {
-        var fname = Path.GetFileName(filePath);
-        await using var fs = File.Open(filePath, FileMode.Open);
-
-        networkStream.Write(fname.GetUtf8BytesCount().ToNetworkBytes());
-        networkStream.Write(Encoding.UTF8.GetBytes(fname));
-        networkStream.Write(fs.Length.ToNetworkBytes());
-        await fs.CopyToAsync(networkStream, token);
-    }
-
     public ValueTask DisposeAsync()
     {
         if (tcpClient is null)
@@ -60,5 +49,16 @@ public class FileSender : IFileSender
         tcpClient = null;
 
         return ValueTask.CompletedTask;
+    }
+
+    private async Task SendFile(NetworkStream networkStream, string filePath, CancellationToken token)
+    {
+        var fname = Path.GetFileName(filePath);
+        await using var fs = File.Open(filePath, FileMode.Open);
+
+        networkStream.Write(fname.GetUtf8BytesCount().ToNetworkBytes());
+        networkStream.Write(Encoding.UTF8.GetBytes(fname));
+        networkStream.Write(fs.Length.ToNetworkBytes());
+        await fs.CopyToAsync(networkStream, token);
     }
 }

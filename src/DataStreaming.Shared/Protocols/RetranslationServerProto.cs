@@ -42,7 +42,7 @@ public class RetranslationServerProto : IServerProtocol
             Buffer = memoryWrapper
         };
 
-        for (int i = 0; i < numberOfFiles; i++)
+        for (var i = 0; i < numberOfFiles; i++)
         {
             iterInfo = await ReadFileData(party, iterInfo, token);
             if (iterInfo.IsDisconnectedPrematurely)
@@ -64,8 +64,8 @@ public class RetranslationServerProto : IServerProtocol
 
         long totalRead = 0;
         long leftToRead = 0;
-        int toWrite = 0;
-        int read = 0;
+        var toWrite = 0;
+        var read = 0;
 
         await using var memoryStream = new MemoryStream();
 

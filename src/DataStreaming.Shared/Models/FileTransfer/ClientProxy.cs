@@ -15,11 +15,6 @@ public class ClientProxy
         Protocol = protocol;
     }
 
-    internal void SetClient(TcpClient client)
-    {
-        Client = client;
-    }
-
     public TcpClient Client { get; private set; }
 
     public IPEndPoint EndPoint { get; }
@@ -27,6 +22,11 @@ public class ClientProxy
     public ClientType ClientType { get; private set; }
 
     public RetranslationServerProto Protocol { get; }
+
+    internal void SetClient(TcpClient client)
+    {
+        Client = client;
+    }
 
     public Task DoCommunication(CancellationToken token)
     {

@@ -22,6 +22,7 @@ public class ProtocolNegotiator : IProtocolNegotiator
     {
         throw new NotImplementedException();
     }
+
     public ValueTask DisposeAsync()
     {
         throw new NotImplementedException();
