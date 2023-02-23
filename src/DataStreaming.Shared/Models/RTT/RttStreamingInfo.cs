@@ -10,13 +10,14 @@ public struct RttStreamingInfo : StreamingInfo<RttResponse>
 
     public Memory<byte> LeftData { get; set; }
 
+    public bool IsDisconnectedPrematurely { get; private set; }
     public RttResponse Message { get; private set; }
     
     public void ConstructMessage()
     {
         //for debug
         var size = MessageBuffer.Span.GetHostOrderInt();
-        Message = new RttResponse   
+        Message = new RttResponse
         {
             SequenceNumber = unchecked((uint)MessageBuffer.Span[4..].GetHostOrderInt64()),
             Timetrace = MessageTimetrace,
@@ -28,8 +29,6 @@ public struct RttStreamingInfo : StreamingInfo<RttResponse>
     
     // echo message arrived timestamp
     public long MessageTimetrace { get; set; }
-
-    public ulong Counter { get; set; }
 
     public static RttStreamingInfo InitWithPacketSize(int packetSize)
     {

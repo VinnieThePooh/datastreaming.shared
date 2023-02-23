@@ -2,13 +2,15 @@ namespace DataStreaming.Models.Common;
 
 public interface StreamingInfo<T>
 {
-    public Memory<byte> MessageBuffer { get; set; }
+    Memory<byte> MessageBuffer { get; set; }
 
-    public Memory<byte> LeftData { get; set; }
+    Memory<byte> LeftData { get; set; }
 
-    public int? PacketSize { get; set; }
+    int? PacketSize { get; set; }
+    
+    bool IsDisconnectedPrematurely { get; }
 
-    public T Message { get; }
+    T Message { get; }
 
     void ConstructMessage();
 }

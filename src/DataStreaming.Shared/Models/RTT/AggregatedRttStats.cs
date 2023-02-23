@@ -1,6 +1,6 @@
 namespace DataStreaming.Models.RTT;
 
-public struct IntervalRttStats
+public struct AggregatedRttStats
 {
     public ulong SequenceNumber { get; set; }
 

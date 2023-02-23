@@ -1,6 +1,11 @@
 using System.Collections.Concurrent;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Net.Sockets;
 using DataStreaming.Constants.RTT;
+using DataStreaming.Events;
+using DataStreaming.Events.Rtt;
+using DataStreaming.Exceptions;
 using DataStreaming.Extensions;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
@@ -11,6 +16,8 @@ public class SingleIntervalHandler : IRttMeteringHandler
 {
     private readonly HandlerMeteringSettings _settings;
     private static readonly ConcurrentDictionary<ulong, RttStats> _statsMap = new();
+    
+    public AsyncEventHandler<RttStatisticsEventArgs> RttReceived { get; }
 
     public SingleIntervalHandler(HandlerMeteringSettings settings)
     {
@@ -37,30 +44,59 @@ public class SingleIntervalHandler : IRttMeteringHandler
     
     public Task ReceivingTask { get; private set; }
 
-    Task StartReceiving(Socket party, CancellationToken token)
+    async Task StartReceiving(Socket party, CancellationToken token)
     {
         var streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
         
         while (!token.IsCancellationRequested)
         {
-            streamInfo = ReadStreamData(party, token, streamInfo);
-        }
-        
+            streamInfo = await ReadStreamData(party, token, streamInfo);
+            if (streamInfo.IsDisconnectedPrematurely)
+                throw new DisconnectedPrematurelyException();
 
-        return Task.CompletedTask;
+            var message = streamInfo.Message;
+            if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
+            {
+                stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
+                RttReceived?.Invoke(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
+            }
+        }
+        token.ThrowIfCancellationRequested();
     }
 
-    private RttStreamingInfo ReadStreamData(Socket party, CancellationToken token, RttStreamingInfo streamingInfo)
+    private async ValueTask<RttStreamingInfo> ReadStreamData(Socket party, CancellationToken token, RttStreamingInfo streamingInfo)
     {
-        var pSize = streamingInfo.PacketSize;
+        var pSize = (int)streamingInfo.PacketSize!;
         var totalRead = streamingInfo.LeftData.Length;
+        var leftToRead = pSize - totalRead;
+        var toWrite = 0;
         var read = 0;
+
+        var leftData = streamingInfo.LeftData;
+        if (!leftData.IsEmpty)
+        {
+            leftData.CopyTo(streamingInfo.MessageBuffer);
+            streamingInfo.LeftData = Memory<byte>.Empty;
+        }
 
         while (totalRead < pSize)
         {
-            
+            read = await party.ReceiveAsync(streamingInfo.MessageBuffer[totalRead..], token);
+            toWrite = Math.Min(read, leftToRead);
+            leftToRead -= toWrite;
+            totalRead += read;
         }
+        
+        streamingInfo.MessageTimetrace = Stopwatch.GetTimestamp();
 
+        if (toWrite < read)
+        {
+            var delta = read - toWrite;
+            var from = totalRead - read + toWrite;
+            streamingInfo.LeftData = streamingInfo.MessageBuffer[from..(from + delta)];
+        }
+        
+        streamingInfo.LeftData = toWrite < read ? streamingInfo.MessageBuffer[toWrite..read] : Memory<byte>.Empty;
         streamingInfo.ConstructMessage();
         return streamingInfo;
     }
