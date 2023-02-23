@@ -95,8 +95,7 @@ public class SingleIntervalHandler : IRttMeteringHandler
             var from = totalRead - read + toWrite;
             streamingInfo.LeftData = streamingInfo.MessageBuffer[from..(from + delta)];
         }
-        
-        streamingInfo.LeftData = toWrite < read ? streamingInfo.MessageBuffer[toWrite..read] : Memory<byte>.Empty;
+
         streamingInfo.ConstructMessage();
         return streamingInfo;
     }
