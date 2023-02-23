@@ -7,8 +7,11 @@ public struct AggregatedRttStats
     /// </summary>
     public ulong SequenceNumber { get; set; }
 
+    /// <summary>
+    /// Average RTT in the interval
+    /// </summary>
     public TimeSpan RttValue { get; set; }
-
+    
     //in ms
     public int AggregationInterval { get; set; }
 
