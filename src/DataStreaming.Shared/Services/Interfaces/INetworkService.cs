@@ -8,5 +8,5 @@ public interface INetworkService<out TSettings> where TSettings : HostSettings
 
     Task<bool> Stop();
     
-    TSettings Settings { get; }
+    TSettings HostSettings { get; }
 }

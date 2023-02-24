@@ -19,10 +19,10 @@ public class RetranslationServer : IRetranslationServer, INetworkService<FileRet
 
     public RetranslationServer(FileRetranslationSettings settings)
     {
-        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        HostSettings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public FileRetranslationSettings Settings { get; }
+    public FileRetranslationSettings HostSettings { get; }
 
     public Dictionary<IPEndPoint, ClientProxy> ClientProxies { get; } = new();
 
@@ -34,11 +34,11 @@ public class RetranslationServer : IRetranslationServer, INetworkService<FileRet
         _cts = new CancellationTokenSource();
         var protoFactory = FileRetranslationProtocolFactory.Create();
 
-        var listener = new TcpListener(IPAddress.Any, Settings.Port);
+        var listener = new TcpListener(IPAddress.Any, HostSettings.Port);
         listener.Start();
 
         Console.WriteLine(
-            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{Settings.Port}");
+            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{HostSettings.Port}");
 
         while (!_cts.Token.IsCancellationRequested)
         {
@@ -66,7 +66,7 @@ public class RetranslationServer : IRetranslationServer, INetworkService<FileRet
     private ClientProxy CreateClientProxy(TcpClient client, IProtocolFactory factory)
     {
         var proto = (RetranslationServerProto)factory.CreateServerProtocol();
-        proto.RetranslationSettings = Settings;
+        proto.RetranslationSettings = HostSettings;
         proto.FileUploaded += OnImageUploaded;
 
         var ep = client.GetRemoteEndpoint()!;
