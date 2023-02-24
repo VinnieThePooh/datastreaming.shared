@@ -8,13 +8,13 @@ using DataStreaming.Settings;
 namespace DataStreaming.Services.RTT;
 
 //todo: logger?
-public class RttEchoServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>, IAsyncDisposable
+public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>, IAsyncDisposable
 {
     private readonly ISocketProtocolFactory protocolFactory;
     private CancellationTokenSource? cts;
     private Socket? serverSocket;
 
-    public RttEchoServer(HostSettings settings, ISocketProtocolFactory protocolFactory)
+    public RttMeteringServer(HostSettings settings, ISocketProtocolFactory protocolFactory)
     {
         this.protocolFactory = protocolFactory ?? throw new ArgumentNullException(nameof(protocolFactory));
         HostSettings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -28,10 +28,7 @@ public class RttEchoServer : INetworkService<HostSettings>, IHasClientProxies<Rt
         cts = new CancellationTokenSource();
 
         serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        int port = 7;
-        int.TryParse(HostSettings.Host, out port);
-        
-        serverSocket.Bind(new IPEndPoint(IPAddress.Parse(HostSettings.Host), port));
+        serverSocket.Bind(new IPEndPoint(IPAddress.Parse(HostSettings.Host), HostSettings.Port));
         serverSocket.Listen();
 
         while (!cts.IsCancellationRequested)

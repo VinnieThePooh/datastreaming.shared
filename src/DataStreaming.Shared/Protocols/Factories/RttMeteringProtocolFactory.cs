@@ -1,6 +1,7 @@
 using DataStreaming.Constants.RTT;
 using DataStreaming.Protocols.Handlers.RTT;
 using DataStreaming.Protocols.Interfaces;
+using DataStreaming.Protocols.Interfaces.RTT;
 using DataStreaming.Protocols.RTT;
 using DataStreaming.Settings;
 
@@ -20,7 +21,7 @@ public class RttMeteringProtocolFactory : IRttMeteringProtocolFactory
 
     public static ISocketProtocolFactory Create() => new RttMeteringProtocolFactory();
 
-    public IClientSocketProtocol CreateClientProtocol(RttMeteringSettings settings)
+    public IRttMeteringProtocol CreateClientProtocol(RttMeteringSettings settings)
     {
         IRttMeteringHandler handler;
 
@@ -31,7 +32,7 @@ public class RttMeteringProtocolFactory : IRttMeteringProtocolFactory
                     ThrowIfInvalidSettings(settings.AggregationInterval, RttMeteringType.AggregationInterval);
                 case RttMeteringType.SinglePacket:
                     ThrowIfInvalidSettings(settings.SinglePacket, RttMeteringType.SinglePacket);
-                    handler = new SingleIntervalHandler(settings.SinglePacket);
+                    handler = new SinglePacketHandler(settings.SinglePacket);
                     break;
                 default: throw new InvalidOperationException();
         }

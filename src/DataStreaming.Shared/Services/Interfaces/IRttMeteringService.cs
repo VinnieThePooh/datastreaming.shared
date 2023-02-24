@@ -1,10 +1,11 @@
 using DataStreaming.Constants.RTT;
+using DataStreaming.Events.Rtt;
 using DataStreaming.Protocols.Handlers.RTT;
 using DataStreaming.Settings;
 
-namespace DataStreaming.Protocols.Interfaces.RTT;
+namespace DataStreaming.Services.Interfaces;
 
-public interface IRttMeteringProtocol : IClientSocketProtocol
+public interface IRttMeteringService : INetworkService<RttMeteringSettings>, INotifyRttStatistics, IAsyncDisposable
 {
     RttMeteringType MeteringType { get; }
 

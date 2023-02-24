@@ -10,7 +10,7 @@ var configuration = new ConfigurationBuilder()
 
 var hostSettings = configuration.GetSection("").Get<HostSettings>();
 var protoFactory = (IRttMeteringProtocolFactory)RttMeteringProtocolFactory.Create();
-var server = new RttEchoServer(hostSettings, protoFactory);
+var server = new RttMeteringServer(hostSettings, protoFactory);
 
 try
 {

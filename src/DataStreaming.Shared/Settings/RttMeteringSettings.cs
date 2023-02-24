@@ -1,4 +1,3 @@
-using System.Net.Sockets;
 using DataStreaming.Constants.RTT;
 
 namespace DataStreaming.Settings;

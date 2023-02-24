@@ -11,14 +11,13 @@ using DataStreaming.Settings;
 
 namespace DataStreaming.Protocols.Handlers.RTT;
 
-public class SingleIntervalHandler : IRttMeteringHandler
+public class SinglePacketHandler : IRttMeteringHandler
 {
     private readonly HandlerMeteringSettings _settings;
     private static readonly ConcurrentDictionary<ulong, RttStats> _statsMap = new();
+    public event AsyncEventHandler<RttStatisticsEventArgs> RttReceived;
     
-    public AsyncEventHandler<RttStatisticsEventArgs> RttReceived { get; }
-
-    public SingleIntervalHandler(HandlerMeteringSettings settings)
+    public SinglePacketHandler(HandlerMeteringSettings settings)
     {
         _settings = settings;
     }
