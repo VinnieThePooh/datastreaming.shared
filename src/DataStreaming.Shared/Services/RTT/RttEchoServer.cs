@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Mime;
 using System.Net.Sockets;
 using DataStreaming.Models.RTT;
 using DataStreaming.Protocols.Factories;
@@ -31,25 +30,9 @@ public class RttEchoServer : INetworkService<HostSettings>, IHasClientProxies<Rt
         serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         int port = 7;
         int.TryParse(HostSettings.Host, out port);
-        try
-        {
-            serverSocket.Bind(new IPEndPoint(IPAddress.Parse(HostSettings.Host), port));
-            serverSocket.Listen();
-        }
-        catch (SocketException e)
-        {
-            //todo: log here
-            Console.WriteLine(e);
-            serverSocket.Dispose();
-            Environment.Exit(e.ErrorCode);
-        }
-        catch (Exception e)
-        {
-            //todo: log here
-            Console.WriteLine($"Unexpected exception: {e}");
-            serverSocket.Dispose();
-            Environment.Exit(e.HResult);
-        }
+        
+        serverSocket.Bind(new IPEndPoint(IPAddress.Parse(HostSettings.Host), port));
+        serverSocket.Listen();
 
         while (!cts.IsCancellationRequested)
         {
@@ -58,6 +41,7 @@ public class RttEchoServer : INetworkService<HostSettings>, IHasClientProxies<Rt
             ClientProxies.Add(proxy.EndPoint, proxy);
             _ = Task.Run(() => proxy.DoCommunication(proxy.TokenSource!.Token));
         }
+        
         return true;
     }
 
@@ -85,6 +69,9 @@ public class RttEchoServer : INetworkService<HostSettings>, IHasClientProxies<Rt
 
     public ValueTask DisposeAsync()
     {
+        serverSocket?.Dispose();
+        cts?.Dispose();
+        
         foreach (var clientProxy in ClientProxies.Values)
         {
             if (!clientProxy.TokenSource.IsCancellationRequested)
