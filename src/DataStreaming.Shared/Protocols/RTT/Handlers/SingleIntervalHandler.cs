@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Net.Sockets;
 using DataStreaming.Constants.RTT;

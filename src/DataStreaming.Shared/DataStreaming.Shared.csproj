@@ -8,4 +8,8 @@
         <LangVersion>default</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\RTT" />
+    </ItemGroup>
+
 </Project>

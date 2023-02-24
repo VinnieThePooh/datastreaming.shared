@@ -13,16 +13,16 @@ using DataStreaming.Settings;
 
 namespace DataStreaming.Services.FileTransfer;
 
-public class RetranslationServer : IRetranslationServer
+public class RetranslationServer : IRetranslationServer, INetworkService<FileRetranslationSettings>
 {
     private CancellationTokenSource _cts;
 
     public RetranslationServer(FileRetranslationSettings settings)
     {
-        RetranslationSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public FileRetranslationSettings RetranslationSettings { get; }
+    public FileRetranslationSettings Settings { get; }
 
     public Dictionary<IPEndPoint, ClientProxy> ClientProxies { get; } = new();
 
@@ -34,11 +34,11 @@ public class RetranslationServer : IRetranslationServer
         _cts = new CancellationTokenSource();
         var protoFactory = FileRetranslationProtocolFactory.Create();
 
-        var listener = new TcpListener(IPAddress.Any, RetranslationSettings.Port);
+        var listener = new TcpListener(IPAddress.Any, Settings.Port);
         listener.Start();
 
         Console.WriteLine(
-            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{RetranslationSettings.Port}");
+            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{Settings.Port}");
 
         while (!_cts.Token.IsCancellationRequested)
         {
@@ -66,7 +66,7 @@ public class RetranslationServer : IRetranslationServer
     private ClientProxy CreateClientProxy(TcpClient client, IProtocolFactory factory)
     {
         var proto = (RetranslationServerProto)factory.CreateServerProtocol();
-        proto.RetranslationSettings = RetranslationSettings;
+        proto.RetranslationSettings = Settings;
         proto.FileUploaded += OnImageUploaded;
 
         var ep = client.GetRemoteEndpoint()!;
