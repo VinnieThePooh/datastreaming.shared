@@ -8,7 +8,7 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
-var hostSettings = configuration.GetSection("").Get<HostSettings>();
+var hostSettings = configuration.GetSection(HostSettings.SectionName).Get<HostSettings>();
 var protoFactory = (IRttMeteringProtocolFactory)RttMeteringProtocolFactory.Create();
 var server = new RttMeteringServer(hostSettings, protoFactory);
 

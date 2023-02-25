@@ -55,8 +55,8 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
     }
 
     public HostSettings HostSettings { get; }
-    
-    public Dictionary<IPEndPoint, RttClientProxy> ClientProxies { get; }
+
+    public Dictionary<IPEndPoint, RttClientProxy> ClientProxies { get; } = new();
     
     public RttClientProxy CreateProxy(Socket party, CancellationToken token)
     {
