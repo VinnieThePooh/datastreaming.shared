@@ -11,6 +11,11 @@ var configuration = new ConfigurationBuilder()
 var hostSettings = configuration.GetSection(HostSettings.SectionName).Get<HostSettings>();
 var protoFactory = (IRttMeteringProtocolFactory)RttMeteringProtocolFactory.Create();
 var server = new RttMeteringServer(hostSettings, protoFactory);
+server.ListeningStarted += (o, eventArgs) =>
+{
+    Console.WriteLine($"[{nameof(RttMeteringServer)}]: Listening at {eventArgs.EndPoint}");
+    return Task.CompletedTask;
+};
 
 try
 {

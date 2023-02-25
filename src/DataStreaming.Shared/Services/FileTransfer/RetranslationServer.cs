@@ -13,18 +13,20 @@ using DataStreaming.Settings;
 
 namespace DataStreaming.Services.FileTransfer;
 
-public class RetranslationServer : IRetranslationServer, INetworkService<FileRetranslationSettings>
+public class RetranslationServer : IRetranslationServer, INetworkService<FileRetranslationSettings>, INotifyListeningStarted
 {
     private CancellationTokenSource _cts;
 
     public RetranslationServer(FileRetranslationSettings settings)
     {
-        HostSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public FileRetranslationSettings HostSettings { get; }
+    public FileRetranslationSettings Settings { get; }
 
     public Dictionary<IPEndPoint, ClientProxy> ClientProxies { get; } = new();
+
+    public event AsyncEventHandler<ListeningEventArgs>? ListeningStarted;
 
     public async Task<bool> Start()
     {
@@ -34,11 +36,10 @@ public class RetranslationServer : IRetranslationServer, INetworkService<FileRet
         _cts = new CancellationTokenSource();
         var protoFactory = FileRetranslationProtocolFactory.Create();
 
-        var listener = new TcpListener(IPAddress.Any, HostSettings.Port);
+        var endPoint = new IPEndPoint(IPAddress.Any, Settings.Port);
+        var listener = new TcpListener(endPoint);
         listener.Start();
-
-        Console.WriteLine(
-            $"[{nameof(RetranslationServer)}]: Listening at {IPAddress.Any}:{HostSettings.Port}");
+        ListeningStarted?.Invoke(this, new ListeningEventArgs(endPoint));
 
         while (!_cts.Token.IsCancellationRequested)
         {
@@ -66,7 +67,7 @@ public class RetranslationServer : IRetranslationServer, INetworkService<FileRet
     private ClientProxy CreateClientProxy(TcpClient client, IProtocolFactory factory)
     {
         var proto = (RetranslationServerProto)factory.CreateServerProtocol();
-        proto.RetranslationSettings = HostSettings;
+        proto.RetranslationSettings = Settings;
         proto.FileUploaded += OnImageUploaded;
 
         var ep = client.GetRemoteEndpoint()!;

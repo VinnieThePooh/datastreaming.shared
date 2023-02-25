@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using DataStreaming.Events;
 using DataStreaming.Models.RTT;
 using DataStreaming.Protocols.Factories;
 using DataStreaming.Services.Interfaces;
@@ -8,7 +9,7 @@ using DataStreaming.Settings;
 namespace DataStreaming.Services.RTT;
 
 //todo: logger?
-public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>, IAsyncDisposable
+public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>, INotifyListeningStarted, IAsyncDisposable
 {
     private readonly ISocketProtocolFactory protocolFactory;
     private CancellationTokenSource? cts;
@@ -17,8 +18,10 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
     public RttMeteringServer(HostSettings settings, ISocketProtocolFactory protocolFactory)
     {
         this.protocolFactory = protocolFactory ?? throw new ArgumentNullException(nameof(protocolFactory));
-        HostSettings = settings ?? throw new ArgumentNullException(nameof(settings));
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
+
+    public event AsyncEventHandler<ListeningEventArgs>? ListeningStarted;
 
     public async Task<bool> Start()
     {
@@ -27,9 +30,11 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
 
         cts = new CancellationTokenSource();
 
+        var endPoint = new IPEndPoint(IPAddress.Parse(Settings.Host), Settings.Port);
         serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        serverSocket.Bind(new IPEndPoint(IPAddress.Parse(HostSettings.Host), HostSettings.Port));
+        serverSocket.Bind(endPoint);
         serverSocket.Listen();
+        ListeningStarted?.Invoke(this, new ListeningEventArgs(endPoint));
 
         while (!cts.IsCancellationRequested)
         {
@@ -54,7 +59,7 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
         return true;
     }
 
-    public HostSettings HostSettings { get; }
+    public HostSettings Settings { get; }
 
     public Dictionary<IPEndPoint, RttClientProxy> ClientProxies { get; } = new();
     

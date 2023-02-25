@@ -18,7 +18,7 @@ public class RttMeteringService : IRttMeteringService
     private Socket? clientSocket;
     private readonly IRttMeteringProtocol clientMeteringProtocol;
     
-    RttMeteringSettings INetworkService<RttMeteringSettings>.HostSettings => MeteringSettings;
+    RttMeteringSettings INetworkService<RttMeteringSettings>.Settings => MeteringSettings;
 
     public RttMeteringService(RttMeteringSettings settings, IRttMeteringProtocolFactory factory)
     {
