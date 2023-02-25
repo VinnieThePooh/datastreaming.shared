@@ -21,7 +21,8 @@ meteringService.RttReceived += (o, eventArgs) =>
     if (eventArgs.MeteringType == RttMeteringType.SinglePacket)
     {
         var stats = eventArgs.RttStats.Value;
-        Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {stats.RttValue.TotalMicroseconds} mks");
+        Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {Math.Ceiling(stats.RttValue.TotalMicroseconds)} mks");
+        // Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {stats.RttValue}");
         return Task.CompletedTask;
     }
 
