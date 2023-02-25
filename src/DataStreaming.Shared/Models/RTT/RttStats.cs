@@ -6,7 +6,7 @@ public struct RttStats
 {
     public ulong SequenceNumber { get; set; }
 
-    public TimeSpan RttValue { get; set; }
+    public TimeSpan Rtt { get; set; }
 
     public long SendTimeTrace { get; set; }
 

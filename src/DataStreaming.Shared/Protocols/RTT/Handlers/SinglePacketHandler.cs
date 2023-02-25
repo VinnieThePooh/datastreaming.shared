@@ -55,7 +55,7 @@ public class SinglePacketHandler : IRttMeteringHandler
             var message = streamInfo.Message;
             if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
             {
-                stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
+                stats.Rtt = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
                 RttReceived?.Invoke(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
             }
         }
