@@ -9,7 +9,8 @@ using DataStreaming.Settings;
 namespace DataStreaming.Services.RTT;
 
 //todo: logger?
-public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>, INotifyListeningStarted, IAsyncDisposable
+public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxies<RttClientProxy>,
+    INotifyListeningStarted, IAsyncDisposable
 {
     private readonly ISocketProtocolFactory protocolFactory;
     private CancellationTokenSource? cts;
@@ -43,7 +44,7 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
             ClientProxies.Add(proxy.EndPoint, proxy);
             _ = Task.Run(() => proxy.DoCommunication(proxy.TokenSource!.Token));
         }
-        
+
         return true;
     }
 
@@ -51,7 +52,7 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
     {
         if (cts is null)
             return false;
-        
+
         cts.Cancel();
         cts = null;
 
@@ -62,7 +63,7 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
     public HostSettings Settings { get; }
 
     public Dictionary<IPEndPoint, RttClientProxy> ClientProxies { get; } = new();
-    
+
     public RttClientProxy CreateProxy(Socket party, CancellationToken token)
     {
         var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -73,13 +74,14 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
     {
         serverSocket?.Dispose();
         cts?.Dispose();
-        
+
         foreach (var clientProxy in ClientProxies.Values)
         {
             if (!clientProxy.TokenSource.IsCancellationRequested)
                 clientProxy.TokenSource.Cancel();
             clientProxy.Dispose();
         }
+
         ClientProxies.Clear();
         return ValueTask.CompletedTask;
     }

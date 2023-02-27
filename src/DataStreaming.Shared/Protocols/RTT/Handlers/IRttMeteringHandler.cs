@@ -6,6 +6,6 @@ namespace DataStreaming.Protocols.RTT.Handlers;
 public interface IRttMeteringHandler : ISocketProtocol, INotifyRttStatistics
 {
     RttMeteringType MeteringType { get; }
-    
+
     Task ReceivingTask { get; }
 }

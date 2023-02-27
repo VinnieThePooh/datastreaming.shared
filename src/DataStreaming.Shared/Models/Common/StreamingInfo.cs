@@ -7,7 +7,7 @@ public interface StreamingInfo<T>
     Memory<byte> LeftData { get; set; }
 
     int? PacketSize { get; set; }
-    
+
     bool IsDisconnectedPrematurely { get; }
 
     T Message { get; }
