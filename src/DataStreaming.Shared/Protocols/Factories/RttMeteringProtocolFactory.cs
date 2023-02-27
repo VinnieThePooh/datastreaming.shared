@@ -14,7 +14,7 @@ public class RttMeteringProtocolFactory : IRttMeteringProtocolFactory
     }
 
     public IClientSocketProtocol CreateClientProtocol() =>
-        throw new NotImplementedException(
+        throw new NotSupportedException(
             $"Use CreateClientProtocol with {nameof(RttMeteringSettings)} parameter instead");
 
     public IServerSocketProtocol CreateServerProtocol() => new RttMeteringServerProto();
