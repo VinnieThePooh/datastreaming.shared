@@ -1,4 +1,6 @@
-namespace DataStreaming.Protocols.Interfaces;
+using DataStreaming.Protocols.Interfaces;
+
+namespace DataStreaming.Protocols.Factories;
 
 public interface IProtocolFactory
 {

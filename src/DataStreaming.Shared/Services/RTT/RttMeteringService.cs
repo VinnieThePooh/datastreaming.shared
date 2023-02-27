@@ -4,8 +4,8 @@ using DataStreaming.Constants.RTT;
 using DataStreaming.Events;
 using DataStreaming.Events.Rtt;
 using DataStreaming.Protocols.Factories;
-using DataStreaming.Protocols.Handlers.RTT;
 using DataStreaming.Protocols.Interfaces.RTT;
+using DataStreaming.Protocols.RTT.Handlers;
 using DataStreaming.Services.Interfaces;
 using DataStreaming.Settings;
 

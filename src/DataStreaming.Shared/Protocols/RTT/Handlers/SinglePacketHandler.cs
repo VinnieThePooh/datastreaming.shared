@@ -9,7 +9,7 @@ using DataStreaming.Extensions;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
 
-namespace DataStreaming.Protocols.Handlers.RTT;
+namespace DataStreaming.Protocols.RTT.Handlers;
 
 public class SinglePacketHandler : IRttMeteringHandler
 {

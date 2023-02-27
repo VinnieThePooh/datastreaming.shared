@@ -3,7 +3,7 @@ using DataStreaming.Constants.RTT;
 using DataStreaming.Events;
 using DataStreaming.Events.Rtt;
 
-namespace DataStreaming.Protocols.Handlers.RTT;
+namespace DataStreaming.Protocols.RTT.Handlers;
 
 public class AggregatedIntervalHandler : IRttMeteringHandler
 {

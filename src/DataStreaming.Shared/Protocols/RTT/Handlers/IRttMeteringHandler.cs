@@ -1,8 +1,7 @@
 using DataStreaming.Constants.RTT;
-using DataStreaming.Events.Rtt;
 using DataStreaming.Protocols.Interfaces;
 
-namespace DataStreaming.Protocols.Handlers.RTT;
+namespace DataStreaming.Protocols.RTT.Handlers;
 
 public interface IRttMeteringHandler : ISocketProtocol, INotifyRttStatistics
 {
