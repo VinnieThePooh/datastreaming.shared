@@ -16,17 +16,18 @@ public class SinglePacketHandler : IRttMeteringHandler
     private readonly HandlerMeteringSettings _settings;
     private static readonly ConcurrentDictionary<ulong, RttStats> _statsMap = new();
     public event AsyncEventHandler<RttStatisticsEventArgs> RttReceived;
-    
+
     public SinglePacketHandler(HandlerMeteringSettings settings)
     {
         _settings = settings;
     }
-    
+
     public async Task DoCommunication(Socket party, CancellationToken token)
     {
         ulong counter = 1;
         using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(_settings.Interval));
         var memory = InitMemory(_settings.PacketSize, counter);
+
         ReceivingTask = Task.Run(() => StartReceiving(party, token), token);
         do
         {
@@ -34,18 +35,17 @@ public class SinglePacketHandler : IRttMeteringHandler
             await party.SendAsync(memory, token);
             _statsMap.TryAdd(counter, stats);
             IncrementCounter(memory.Span, ++counter);
-        }
-        while (await timer.WaitForNextTickAsync(token));
+        } while (await timer.WaitForNextTickAsync(token));
     }
 
     public RttMeteringType MeteringType => RttMeteringType.SinglePacket;
-    
+
     public Task ReceivingTask { get; private set; }
 
     async Task StartReceiving(Socket party, CancellationToken token)
     {
         var streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
-        
+
         while (!token.IsCancellationRequested)
         {
             streamInfo = await ReadStreamData(party, token, streamInfo);
@@ -59,10 +59,12 @@ public class SinglePacketHandler : IRttMeteringHandler
                 RttReceived?.Invoke(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
             }
         }
+
         token.ThrowIfCancellationRequested();
     }
 
-    private async ValueTask<RttStreamingInfo> ReadStreamData(Socket party, CancellationToken token, RttStreamingInfo streamingInfo)
+    private async ValueTask<RttStreamingInfo> ReadStreamData(Socket party, CancellationToken token,
+        RttStreamingInfo streamingInfo)
     {
         var pSize = (int)streamingInfo.PacketSize!;
         var totalRead = streamingInfo.LeftData.Length;
@@ -84,7 +86,7 @@ public class SinglePacketHandler : IRttMeteringHandler
             leftToRead -= toWrite;
             totalRead += read;
         }
-        
+
         streamingInfo.MessageTimetrace = Stopwatch.GetTimestamp();
 
         if (toWrite < read)
@@ -103,6 +105,13 @@ public class SinglePacketHandler : IRttMeteringHandler
         var memory = new Memory<byte>(new byte[packetSize]);
         packetSize.ToNetworkBytes().CopyTo(memory.Span);
         unchecked((long)counter).ToNetworkBytes().CopyTo(memory.Span.Slice(4, 8));
+
+        if (packetSize > 12)
+        {
+            var stubMes = "ping-pong-play-with-me!\n"u8;
+            for (int i = 12, j = 0; i < packetSize; i++, j++)
+                memory.Span[i] = (byte)stubMes[j % stubMes.Length];
+        }
         return memory;
     }
 
