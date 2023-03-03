@@ -34,7 +34,7 @@ public class ClientTests
         
             var agStats = eventArgs.AggregatedRttStats.Value;
             Console.WriteLine($"[{nameof(RttMeteringType.AggregationInterval)}]: {agStats.SequenceNumber}. " +
-                                $"Average val: {agStats.RttValue.TotalMicroseconds} mks (({agStats.PacketsCount} for {agStats.AggregationInterval} ms))");
+                                $"Average val: {agStats.AvgRtt.TotalMicroseconds} mks (({agStats.PacketsCount} for {agStats.AggregationInterval} ms))");
             return Task.CompletedTask;
         };
         try

@@ -10,7 +10,11 @@ public struct AggregatedRttStats
     /// <summary>
     /// Average RTT in the interval
     /// </summary>
-    public TimeSpan RttValue { get; set; }
+    public TimeSpan AvgRtt { get; set; }
+
+    public TimeSpan MaxRtt { get; set; }
+
+    public TimeSpan MinRtt { get; set; }
     
     //in ms
     public int AggregationInterval { get; set; }
