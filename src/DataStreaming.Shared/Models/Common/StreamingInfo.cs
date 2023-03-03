@@ -1,6 +1,6 @@
 namespace DataStreaming.Models.Common;
 
-public interface StreamingInfo<T>
+public interface StreamingInfo<out T>
 {
     Memory<byte> MessageBuffer { get; set; }
 
