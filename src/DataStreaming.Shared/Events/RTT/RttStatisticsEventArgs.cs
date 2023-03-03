@@ -1,7 +1,7 @@
 using DataStreaming.Constants.RTT;
 using DataStreaming.Models.RTT;
 
-namespace DataStreaming.Events.Rtt;
+namespace DataStreaming.Events.RTT;
 
 public class RttStatisticsEventArgs : EventArgs
 {

@@ -15,7 +15,7 @@ public class RttMeteringServerProto : IServerSocketProtocol
             var read = await party.ReceiveAsync(memory, token);
             if (read is 0)
             {
-                var ep = (IPEndPoint)party.RemoteEndPoint;
+                var ep = (IPEndPoint)party.RemoteEndPoint!;
                 throw new DisconnectedPrematurelyException($"Client {ep.Address}:{ep.Port} disconnected");
             }
             await party.SendAsync(memory[..read], token);

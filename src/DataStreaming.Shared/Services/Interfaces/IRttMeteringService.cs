@@ -1,6 +1,6 @@
 using DataStreaming.Constants.RTT;
+using DataStreaming.Events.RTT;
 using DataStreaming.Protocols.Handlers.RTT;
-using DataStreaming.Protocols.Interfaces;
 using DataStreaming.Settings;
 
 namespace DataStreaming.Services.Interfaces;

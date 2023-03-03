@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using DataStreaming.Constants.RTT;
 using DataStreaming.Events;
-using DataStreaming.Events.Rtt;
+using DataStreaming.Events.RTT;
 using DataStreaming.Exceptions;
 using DataStreaming.Extensions;
 using DataStreaming.Models.RTT;

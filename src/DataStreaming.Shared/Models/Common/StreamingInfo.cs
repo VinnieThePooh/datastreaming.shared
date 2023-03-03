@@ -12,5 +12,5 @@ public interface StreamingInfo<T>
 
     T Message { get; }
 
-    void ConstructMessage();
+    void ConstructMessage(MemoryStream? memory = null);
 }

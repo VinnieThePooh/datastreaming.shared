@@ -1,4 +1,4 @@
-namespace DataStreaming.Events.Rtt;
+namespace DataStreaming.Events.RTT;
 
 public interface INotifyRttStatistics
 {

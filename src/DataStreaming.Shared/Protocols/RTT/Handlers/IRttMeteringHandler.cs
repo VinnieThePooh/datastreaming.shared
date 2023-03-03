@@ -1,5 +1,5 @@
 using DataStreaming.Constants.RTT;
-using DataStreaming.Events.Rtt;
+using DataStreaming.Events.RTT;
 using DataStreaming.Protocols.Interfaces;
 
 namespace DataStreaming.Protocols.Handlers.RTT;

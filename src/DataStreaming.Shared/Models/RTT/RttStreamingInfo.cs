@@ -13,7 +13,7 @@ public struct RttStreamingInfo : StreamingInfo<RttResponse>
     public bool IsDisconnectedPrematurely { get; private set; }
     public RttResponse Message { get; private set; }
     
-    public void ConstructMessage()
+    public void ConstructMessage(MemoryStream? memory = null)
     {
         //for debug
         var size = MessageBuffer.Span.GetHostOrderInt();
