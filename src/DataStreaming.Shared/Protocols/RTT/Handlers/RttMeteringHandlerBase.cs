@@ -25,7 +25,7 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
     public abstract Task DoCommunication(Socket party, CancellationToken token);
 
     public event AsyncEventHandler<RttStatisticsEventArgs>? RttReceived;
-    public virtual RttMeteringType MeteringType => RttMeteringType.SinglePacket;
+    public RttMeteringType MeteringType { get; protected init; }
 
     public Task ReceivingTask { get; protected set; }
 
@@ -78,7 +78,7 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
         streamingInfo.ConstructMessage();
         return streamingInfo;
     }
-    
+
     protected virtual async Task StartReceiving(Socket party, CancellationToken token)
     {
         var streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
@@ -93,7 +93,7 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
             if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
             {
                 stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
-                InvokeReceivedStatsEvent(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
+                InvokeStatsEvent(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
             }
         }
 
@@ -101,6 +101,6 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void InvokeReceivedStatsEvent(RttMeteringHandlerBase sender, RttStatisticsEventArgs eventArgs) =>
+    protected void InvokeStatsEvent(RttMeteringHandlerBase sender, RttStatisticsEventArgs eventArgs) =>
         RttReceived?.Invoke(sender, eventArgs);
 }

@@ -28,8 +28,9 @@ public class RttMeteringProtocolFactory : IRttMeteringProtocolFactory
         switch (settings.MeteringType)
         {
             case RttMeteringType.AggregationInterval:
-                throw new NotImplementedException();
+                handler = new AggregationIntervalHandler(settings.AggregationInterval);
                 ThrowIfInvalidSettings(settings.AggregationInterval, RttMeteringType.AggregationInterval);
+                break;
             case RttMeteringType.SinglePacket:
                 ThrowIfInvalidSettings(settings.SinglePacket, RttMeteringType.SinglePacket);
                 handler = new SinglePacketHandler(settings.SinglePacket);

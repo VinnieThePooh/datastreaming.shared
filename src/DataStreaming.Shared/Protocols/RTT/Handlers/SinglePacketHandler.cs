@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using DataStreaming.Constants.RTT;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
 
@@ -8,6 +9,7 @@ public class SinglePacketHandler : RttMeteringHandlerBase
 {
     public SinglePacketHandler(HandlerMeteringSettings settings) : base(settings)
     {
+        MeteringType = RttMeteringType.SinglePacket;
     }
 
     public override async Task DoCommunication(Socket party, CancellationToken token)
