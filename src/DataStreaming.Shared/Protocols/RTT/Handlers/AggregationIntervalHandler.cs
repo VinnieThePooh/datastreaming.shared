@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Security;
 using DataStreaming.Constants.RTT;
 using DataStreaming.Events.RTT;
 using DataStreaming.Exceptions;
+using DataStreaming.Models.Common;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
 
@@ -12,9 +14,13 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
 {
     private readonly Barrier barrierObject;
     private readonly List<RttStats> notifyBuffer = new();
+    private RttStreamingInfo streamInfo;
+    private Memory<byte> memory;
+    private ulong messageCounter = 0;
 
     public AggregationIntervalHandler(HandlerMeteringSettings settings) : base(settings)
     {
+        streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
         MeteringType = RttMeteringType.AggregationInterval;
         barrierObject = new Barrier(2, OnPostPhaseAction);
     }
@@ -22,65 +28,65 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     public override async Task DoCommunication(Socket party, CancellationToken token)
     {
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
-        ulong counter = 1;
-
-        var memory = InitMemory(_settings.PacketSize, counter);
+        memory = InitMemory(_settings.PacketSize, messageCounter);
+        
         ReceivingTask = Task.Run(() => StartReceiving(party, token), token);
         while (!token.IsCancellationRequested)
         {
-            RunWithTimer(period, async (s, t) =>
-            {
-                //fine-grained token here
-                while (!t.IsCancellationRequested)
-                {
-                    var stats = RttStats.WithCurrentTimetrace(counter);
-                    await party.SendAsync(memory, token);
-                    _statsMap.TryAdd(counter, stats);
-                    IncrementCounter(memory.Span, ++counter);
-                }
-            }, party, token);
+            RunWithTimer(period, SendPart, party, token);
             barrierObject.SignalAndWait(token);
         }
-
         token.ThrowIfCancellationRequested();
     }
 
     protected override async Task StartReceiving(Socket party, CancellationToken token)
     {
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
-        var streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
-
         while (!token.IsCancellationRequested)
         {
-            //fine-grained token
-            RunWithTimer(period, async (s, t) =>
-            {
-                while (!t.IsCancellationRequested)
-                {
-                    streamInfo = await ReadStreamData(party, t, streamInfo);
-                    if (streamInfo.IsDisconnectedPrematurely)
-                        throw new DisconnectedPrematurelyException();
-
-                    var message = streamInfo.Message;
-                    if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
-                    {
-                        stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
-                        notifyBuffer.Add(stats);
-                    }
-                }
-            }, party, token);
+            RunWithTimer(period, ReceivePart, party, token);
             barrierObject.SignalAndWait(token);
         }
+        token.ThrowIfCancellationRequested();
     }
 
-    void RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket,
-        CancellationToken token)
+    void RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket, CancellationToken token)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
         //redundant check after method return?
         while (!cts.Token.IsCancellationRequested)
             function(socket, cts.Token);
+    }
+
+    private async Task ReceivePart(Socket party, CancellationToken token)
+    {
+        //fine-grained token
+        while (!token.IsCancellationRequested)
+        {
+            streamInfo = await ReadStreamData(party, token, streamInfo);
+            if (streamInfo.IsDisconnectedPrematurely)
+                throw new DisconnectedPrematurelyException();
+
+            var message = streamInfo.Message;
+            if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
+            {
+                stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
+                notifyBuffer.Add(stats);
+            }
+        }
+    }
+
+    private async Task SendPart(Socket party, CancellationToken token)
+    {
+        //fine-grained token
+        while (!token.IsCancellationRequested)
+        {
+            var stats = RttStats.WithCurrentTimetrace(messageCounter);
+            await party.SendAsync(memory, token);
+            _statsMap.TryAdd(messageCounter, stats);
+            IncrementCounter(memory.Span, ++messageCounter);
+        }
     }
 
     private void OnPostPhaseAction(Barrier barrier)
