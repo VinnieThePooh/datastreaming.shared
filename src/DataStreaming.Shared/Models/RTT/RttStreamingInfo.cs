@@ -12,7 +12,7 @@ public struct RttStreamingInfo : StreamingInfo<RttResponse>
 
     public bool IsDisconnectedPrematurely { get; private set; }
     public RttResponse Message { get; private set; }
-    
+
     public void ConstructMessage(MemoryStream? memory = null)
     {
         //for debug
@@ -26,7 +26,7 @@ public struct RttStreamingInfo : StreamingInfo<RttResponse>
     }
 
     public int? PacketSize { get; set; }
-    
+
     // echo message arrived timestamp
     public long MessageTimetrace { get; set; }
 

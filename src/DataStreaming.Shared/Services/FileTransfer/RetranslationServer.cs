@@ -13,7 +13,8 @@ using DataStreaming.Settings;
 
 namespace DataStreaming.Services.FileTransfer;
 
-public class RetranslationServer : IRetranslationServer, INetworkService<FileRetranslationSettings>, INotifyListeningStarted
+public class RetranslationServer : IRetranslationServer, INetworkService<FileRetranslationSettings>,
+    INotifyListeningStarted
 {
     private CancellationTokenSource _cts;
 

@@ -17,7 +17,7 @@ public class RttMeteringService : IRttMeteringService
     private CancellationTokenSource? cts;
     private Socket? clientSocket;
     private readonly IRttMeteringProtocol clientMeteringProtocol;
-    
+
     RttMeteringSettings INetworkService<RttMeteringSettings>.Settings => MeteringSettings;
 
     public RttMeteringService(RttMeteringSettings settings, IRttMeteringProtocolFactory factory)
@@ -27,17 +27,17 @@ public class RttMeteringService : IRttMeteringService
     }
 
     public RttMeteringType MeteringType => clientMeteringProtocol.MeteringType;
-    
+
     public IRttMeteringHandler MeteringHandler => clientMeteringProtocol.MeteringHandler;
     public RttMeteringSettings MeteringSettings => clientMeteringProtocol.MeteringSettings;
-    
+
     public event AsyncEventHandler<RttStatisticsEventArgs>? RttReceived;
 
     public async Task<bool> Start()
     {
         if (cts is not null)
             return false;
-        
+
         cts = new();
         clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         clientMeteringProtocol.MeteringHandler.RttReceived += OnRttReceived;
@@ -52,7 +52,7 @@ public class RttMeteringService : IRttMeteringService
     {
         if (cts is null)
             return false;
-        
+
         cts?.Cancel();
         cts = null;
         await DisposeAsync();

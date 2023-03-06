@@ -6,13 +6,13 @@ namespace DataStreaming.Models.Common;
 
 public interface ISocketClientProxy : IDisposable
 {
-   IServerSocketProtocol ServerProtocol { get; }
-   
-   CancellationTokenSource? TokenSource { get; }
-   
-   Socket? Party { get; }
-   
-   IPEndPoint EndPoint { get; }
+    IServerSocketProtocol ServerProtocol { get; }
 
-   Task DoCommunication(CancellationToken token);
+    CancellationTokenSource? TokenSource { get; }
+
+    Socket? Party { get; }
+
+    IPEndPoint EndPoint { get; }
+
+    Task DoCommunication(CancellationToken token);
 }

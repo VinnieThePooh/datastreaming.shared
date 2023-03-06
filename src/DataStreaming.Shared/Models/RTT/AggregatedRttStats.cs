@@ -15,7 +15,7 @@ public struct AggregatedRttStats
     public TimeSpan MaxRtt { get; set; }
 
     public TimeSpan MinRtt { get; set; }
-    
+
     //in ms
     public int AggregationInterval { get; set; }
 

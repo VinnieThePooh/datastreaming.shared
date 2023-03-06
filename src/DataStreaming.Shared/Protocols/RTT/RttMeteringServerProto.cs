@@ -18,8 +18,10 @@ public class RttMeteringServerProto : IServerSocketProtocol
                 var ep = (IPEndPoint)party.RemoteEndPoint!;
                 throw new DisconnectedPrematurelyException($"Client {ep.Address}:{ep.Port} disconnected");
             }
+
             await party.SendAsync(memory[..read], token);
         }
+
         token.ThrowIfCancellationRequested();
     }
 }

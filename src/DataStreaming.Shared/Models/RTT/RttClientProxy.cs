@@ -8,7 +8,7 @@ namespace DataStreaming.Models.RTT;
 public class RttClientProxy : ISocketClientProxy
 {
     private bool disposed;
-    
+
     public RttClientProxy(Socket party, CancellationTokenSource tokenSource, IServerSocketProtocol serverProtocol)
     {
         Party = party;
@@ -28,7 +28,7 @@ public class RttClientProxy : ISocketClientProxy
     {
         if (disposed)
             return;
-        
+
         disposed = true;
 
         Party.Dispose();

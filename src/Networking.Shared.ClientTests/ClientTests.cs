@@ -16,25 +16,25 @@ public class ClientTests
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .Build();
-            
+
         var meteringSettings = configuration.GetSection(RttMeteringSettings.SectionName).Get<RttMeteringSettings>();
         var protoFactory = (IRttMeteringProtocolFactory)RttMeteringProtocolFactory.Create();
-        
+
         IRttMeteringService meteringService = new RttMeteringService(meteringSettings, protoFactory);
         meteringService.RttReceived += (o, eventArgs) =>
         {
-              
             if (eventArgs.MeteringType == RttMeteringType.SinglePacket)
             {
                 var stats = eventArgs.RttStats.Value;
-                Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {Math.Ceiling(stats.RttValue.TotalMicroseconds)} mks");
+                Console.WriteLine(
+                    $"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {Math.Ceiling(stats.RttValue.TotalMicroseconds)} mks");
                 // Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {stats.RttValue}");
                 return Task.CompletedTask;
             }
-        
+
             var agStats = eventArgs.AggregatedRttStats.Value;
             Console.WriteLine($"[{nameof(RttMeteringType.AggregationInterval)}]: {agStats.SequenceNumber}. " +
-                                $"Average val: {agStats.AvgRtt.TotalMicroseconds} mks (({agStats.PacketsCount} for {agStats.AggregationInterval} ms))");
+                              $"Average val: {agStats.AvgRtt.TotalMicroseconds} mks (({agStats.PacketsCount} for {agStats.AggregationInterval} ms))");
             return Task.CompletedTask;
         };
         try

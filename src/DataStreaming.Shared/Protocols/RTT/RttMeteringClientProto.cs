@@ -13,8 +13,9 @@ public class RttMeteringClientProto : IRttMeteringProtocol
         MeteringHandler = handler;
         MeteringSettings = settings;
     }
-    
-    public Task DoCommunication(Socket party, CancellationToken token) => Task.Run(() => MeteringHandler.DoCommunication(party, token), token);
+
+    public Task DoCommunication(Socket party, CancellationToken token) =>
+        Task.Run(() => MeteringHandler.DoCommunication(party, token), token);
 
     public RttMeteringType MeteringType => MeteringHandler.MeteringType;
 

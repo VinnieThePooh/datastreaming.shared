@@ -10,5 +10,6 @@ public struct RttStats
 
     public long SendTimeTrace { get; set; }
 
-    public static RttStats WithCurrentTimetrace(ulong counter) => new() { SequenceNumber = counter, SendTimeTrace = Stopwatch.GetTimestamp() };
+    public static RttStats WithCurrentTimetrace(ulong counter) => new()
+        { SequenceNumber = counter, SendTimeTrace = Stopwatch.GetTimestamp() };
 }

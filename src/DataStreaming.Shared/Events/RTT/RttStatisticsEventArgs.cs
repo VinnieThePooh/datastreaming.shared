@@ -11,7 +11,7 @@ public class RttStatisticsEventArgs : EventArgs
         MeteringType = RttMeteringType.SinglePacket;
         RttStats = rttStats;
     }
-    
+
     public RttStatisticsEventArgs(ulong counter, AggregatedRttStats? aggregatedRttStats)
     {
         SequenceNumber = counter;
@@ -20,7 +20,7 @@ public class RttStatisticsEventArgs : EventArgs
     }
 
     public ulong SequenceNumber { get; }
-    
+
     public RttMeteringType MeteringType { get; }
 
     public RttStats? RttStats { get; }
