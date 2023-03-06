@@ -1,7 +1,4 @@
-using System.Diagnostics;
 using System.Net.Sockets;
-using DataStreaming.Events.RTT;
-using DataStreaming.Exceptions;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
 
@@ -26,26 +23,5 @@ public class SinglePacketHandler : RttMeteringHandlerBase
             _statsMap.TryAdd(counter, stats);
             IncrementCounter(memory.Span, ++counter);
         } while (await timer.WaitForNextTickAsync(token));
-    }
-
-    async Task StartReceiving(Socket party, CancellationToken token)
-    {
-        var streamInfo = RttStreamingInfo.InitWithPacketSize(_settings.PacketSize);
-
-        while (!token.IsCancellationRequested)
-        {
-            streamInfo = await ReadStreamData(party, token, streamInfo);
-            if (streamInfo.IsDisconnectedPrematurely)
-                throw new DisconnectedPrematurelyException();
-
-            var message = streamInfo.Message;
-            if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
-            {
-                stats.RttValue = Stopwatch.GetElapsedTime(stats.SendTimeTrace, message.Timetrace);
-                InvokeReceivedStatsEvent(this, new RttStatisticsEventArgs(stats.SequenceNumber, stats));
-            }
-        }
-
-        token.ThrowIfCancellationRequested();
     }
 }
