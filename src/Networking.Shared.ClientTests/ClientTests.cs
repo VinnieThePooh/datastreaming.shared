@@ -28,15 +28,14 @@ public class ClientTests
                 var stats = eventArgs.RttStats.Value;
                 Console.WriteLine(
                     $"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {Math.Ceiling(stats.RttValue.TotalMicroseconds)} mks");
-                // Console.WriteLine($"[{nameof(RttMeteringType.SinglePacket)}]: {stats.SequenceNumber}. {stats.RttValue}");
                 return Task.CompletedTask;
             }
 
             var agStats = eventArgs.AggregatedRttStats.Value;
             Console.WriteLine($"[{nameof(RttMeteringType.AggregationInterval)}]: {agStats.SequenceNumber}.\n" +
-                              $"Average val: {agStats.AvgRtt.TotalMicroseconds} mks ({agStats.PacketsCount} for {agStats.AggregationInterval} ms)\n" +
-                              $"Max val: {agStats.MaxRtt}\n" +
-                              $"Min val: {agStats.MinRtt}");
+                              $"Avg Rtt: {(agStats.AvgRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.AvgRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.AvgRtt.TotalMicroseconds, 2) + "mks")} ({agStats.PacketsCount} packets for {agStats.AggregationInterval} ms)\n" +
+                              $"Max Rtt: {(agStats.MaxRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.MaxRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.MaxRtt.TotalMicroseconds, 2) + "mks")}\n" +
+                              $"Min Rtt: {(agStats.MinRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.MinRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.AvgRtt.TotalMicroseconds, 2) + "mks")}\n");
             return Task.CompletedTask;
         };
         try

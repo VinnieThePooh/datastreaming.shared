@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using System.Net.Sockets;
-using System.Security;
 using DataStreaming.Constants.RTT;
 using DataStreaming.Events.RTT;
 using DataStreaming.Exceptions;
-using DataStreaming.Models.Common;
 using DataStreaming.Models.RTT;
 using DataStreaming.Settings;
 
@@ -19,6 +17,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     private ulong messageCounter = 0;
     private int sendCounter = 0;
     private int receiveCounter = 0;
+    private CancellationTokenSource criticalCancellationSource;
 
     public AggregationIntervalHandler(HandlerMeteringSettings settings) : base(settings)
     {
@@ -29,17 +28,19 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
 
     public override async Task DoCommunication(Socket party, CancellationToken token)
     {
+        criticalCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var criticalToken = criticalCancellationSource.Token; 
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         memory = InitMemory(_settings.PacketSize, messageCounter);
 
-        ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, token), TaskCreationOptions.AttachedToParent);
-        while (!token.IsCancellationRequested)
+        ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, criticalToken), TaskCreationOptions.AttachedToParent);
+        while (!criticalToken.IsCancellationRequested)
         {
             //don't wait here - we need to stop sending first
-            RunWithTimer(period, SendPart, party, token, HandlingTaskType.Sending);
-            barrierObject.SignalAndWait(token);
+            RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending);
+            barrierObject.SignalAndWait(criticalToken);
         }
-        token.ThrowIfCancellationRequested();
+        criticalToken.ThrowIfCancellationRequested();
     }
 
     protected override async Task StartReceiving(Socket party, CancellationToken token)
@@ -65,6 +66,14 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         catch (OperationCanceledException)
         {
             Debug.WriteLine($"[{taskType}]: task was cancelled");
+        }
+        catch (SocketException se)
+        {
+            if (se.ErrorCode is 104)
+            {
+                Debug.WriteLine("[Critical]: Metering server reseted connection...Cancelling work");
+                criticalCancellationSource.Cancel();
+            }
         }
         catch (Exception e)
         {
@@ -113,10 +122,10 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
 
     private void OnPostPhaseAction(Barrier barrier)
     {
-        Debug.WriteLine($"NotifyBuffer.Count: {notifyBuffer.Count}  (for {_settings.Interval}ms)");
+        Debug.WriteLine($"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is {notifyBuffer.Count}  (for {_settings.Interval}ms)");
         if (notifyBuffer.Count is 0)
         {
-            Debug.WriteLine("[Notify]: NotifyBuffer.Count is 0. Probably receiving Task was cancelled. Skipping...");
+            Debug.WriteLine($"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is 0. Probably receiving Task was cancelled. Skipping...");
             return;
         }
         var stats = new AggregatedRttStats
