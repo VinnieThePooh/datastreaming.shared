@@ -35,7 +35,8 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, token), TaskCreationOptions.AttachedToParent);
         while (!token.IsCancellationRequested)
         {
-            RunWithTimer(period, SendPart, party, token);
+            //don't wait here - we need to stop sending first
+            RunWithTimer(period, SendPart, party, token, HandlingTaskType.Sending);
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
@@ -46,19 +47,30 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         while (!token.IsCancellationRequested)
         {
-            RunWithTimer(period, ReceivePart, party, token);
+            //wait here
+            await RunWithTimer(period, ReceivePart, party, token, HandlingTaskType.Receiving);
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
     }
 
-    void RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket,
-        CancellationToken token)
+    async Task RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket, CancellationToken token, HandlingTaskType taskType)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
-        int iterations = 0;
-        function(socket, cts.Token);
+        try
+        {
+            await Task.Run(() => function(socket, cts.Token), cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine($"[{taskType}]: task was cancelled");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private async Task ReceivePart(Socket party, CancellationToken token)
@@ -80,7 +92,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             }
         }
 
-        Debug.WriteLine($"ReceivePart: {receiveCounter} packets received");
+        Debug.WriteLine($"[{HandlingTaskType.Receiving}]: {receiveCounter} packets received");
     }
 
     private async Task SendPart(Socket party, CancellationToken token)
@@ -96,12 +108,17 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             sendCounter++;
         }
 
-        Debug.WriteLine($"SendPart: {sendCounter} packets sent");
+        Debug.WriteLine($"[{HandlingTaskType.Sending}]: {sendCounter} packets sent");
     }
 
     private void OnPostPhaseAction(Barrier barrier)
     {
         Debug.WriteLine($"NotifyBuffer.Count: {notifyBuffer.Count}  (for {_settings.Interval}ms)");
+        if (notifyBuffer.Count is 0)
+        {
+            Debug.WriteLine("[Notify]: NotifyBuffer.Count is 0. Probably receiving Task was cancelled. Skipping...");
+            return;
+        }
         var stats = new AggregatedRttStats
         {
             AggregationInterval = _settings.Interval,
