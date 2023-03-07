@@ -21,6 +21,7 @@ public class RttMeteringServerProto : IServerSocketProtocol
 
             await party.SendAsync(memory[..read], token);
         }
+
         token.ThrowIfCancellationRequested();
     }
 }

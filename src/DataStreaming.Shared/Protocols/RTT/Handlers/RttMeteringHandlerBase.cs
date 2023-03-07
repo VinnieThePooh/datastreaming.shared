@@ -34,8 +34,17 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
         var memory = new Memory<byte>(new byte[packetSize]);
         packetSize.ToNetworkBytes().CopyTo(memory.Span);
         unchecked((long)counter).ToNetworkBytes().CopyTo(memory.Span.Slice(4, 8));
+
+        if (packetSize > 12)
+        {
+            var span = memory.Span;
+            string message = "ping-pong-play-with-me!\n";
+            for (int i = 12, j = 0; i < memory.Length; i++, j++)
+                span[i] = (byte)message[j % message.Length];
+        }
         return memory;
     }
+
 
     protected void IncrementCounter(Span<byte> memory, ulong counter)
     {

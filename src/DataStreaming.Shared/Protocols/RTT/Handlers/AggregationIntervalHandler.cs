@@ -31,13 +31,11 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     {
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         memory = InitMemory(_settings.PacketSize, messageCounter);
-        
+
         ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, token), TaskCreationOptions.AttachedToParent);
         while (!token.IsCancellationRequested)
         {
-            Debug.Write("RunWithTimer.SendPart call...", "SendPart");
             RunWithTimer(period, SendPart, party, token);
-            Debug.WriteLine("returned", "SendPart");
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
@@ -48,15 +46,14 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         while (!token.IsCancellationRequested)
         {
-            Debug.Write("RunWithTimer.ReceivePart call...", "ReceivePart");
             RunWithTimer(period, ReceivePart, party, token);
-            Debug.WriteLine("returned", "ReceivePart");
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
     }
 
-    void RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket, CancellationToken token)
+    void RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket,
+        CancellationToken token)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
@@ -82,7 +79,8 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
                 notifyBuffer.Add(stats);
             }
         }
-        Debug.WriteLine($"SendPart: {receiveCounter} packets sent");
+
+        Debug.WriteLine($"ReceivePart: {receiveCounter} packets received");
     }
 
     private async Task SendPart(Socket party, CancellationToken token)
@@ -97,6 +95,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             IncrementCounter(memory.Span, ++messageCounter);
             sendCounter++;
         }
+
         Debug.WriteLine($"SendPart: {sendCounter} packets sent");
     }
 
