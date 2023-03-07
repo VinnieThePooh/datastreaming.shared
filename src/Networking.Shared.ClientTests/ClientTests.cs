@@ -62,7 +62,7 @@ public class ClientTests
         }
         finally
         {
-            await meteringService.DisposeAsync();
+            await meteringService.Stop();
         }
     }
 }

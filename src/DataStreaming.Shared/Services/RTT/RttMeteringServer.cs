@@ -72,6 +72,7 @@ public class RttMeteringServer : INetworkService<HostSettings>, IHasClientProxie
 
     public ValueTask DisposeAsync()
     {
+        serverSocket.Shutdown(SocketShutdown.Both);
         serverSocket?.Dispose();
         cts?.Dispose();
 
