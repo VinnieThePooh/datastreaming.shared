@@ -29,17 +29,19 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     public override async Task DoCommunication(Socket party, CancellationToken token)
     {
         criticalCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-        var criticalToken = criticalCancellationSource.Token; 
+        var criticalToken = criticalCancellationSource.Token;
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         memory = InitMemory(_settings.PacketSize, messageCounter);
 
-        ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, criticalToken), TaskCreationOptions.AttachedToParent);
+        ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, criticalToken),
+            TaskCreationOptions.AttachedToParent);
         while (!criticalToken.IsCancellationRequested)
         {
             //don't wait here - we need to stop sending first
             RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending);
             barrierObject.SignalAndWait(criticalToken);
         }
+
         criticalToken.ThrowIfCancellationRequested();
     }
 
@@ -52,10 +54,12 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             await RunWithTimer(period, ReceivePart, party, token, HandlingTaskType.Receiving);
             barrierObject.SignalAndWait(token);
         }
+
         token.ThrowIfCancellationRequested();
     }
 
-    async Task RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket, CancellationToken token, HandlingTaskType taskType)
+    async Task RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket,
+        CancellationToken token, HandlingTaskType taskType)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
@@ -122,12 +126,15 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
 
     private void OnPostPhaseAction(Barrier barrier)
     {
-        Debug.WriteLine($"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is {notifyBuffer.Count}  (for {_settings.Interval}ms)");
+        Debug.WriteLine(
+            $"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is {notifyBuffer.Count}  (for {_settings.Interval}ms)");
         if (notifyBuffer.Count is 0)
         {
-            Debug.WriteLine($"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is 0. Probably receiving Task was cancelled. Skipping...");
+            Debug.WriteLine(
+                $"[Notify-{barrier.CurrentPhaseNumber}]: NotifyBuffer.Count is 0. Probably receiving Task was cancelled. Skipping...");
             return;
         }
+
         var stats = new AggregatedRttStats
         {
             AggregationInterval = _settings.Interval,

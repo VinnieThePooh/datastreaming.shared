@@ -24,7 +24,7 @@ public static class TaskExtensions
         {
             await allTasks;
         }
-        catch(Exception)
+        catch (Exception)
         {
             if (allTasks.Exception is not null)
                 throw allTasks.Exception.Flatten();

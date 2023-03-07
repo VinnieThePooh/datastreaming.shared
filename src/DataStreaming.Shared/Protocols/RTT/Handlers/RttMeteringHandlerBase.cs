@@ -42,6 +42,7 @@ public abstract class RttMeteringHandlerBase : IRttMeteringHandler
             for (int i = 12, j = 0; i < memory.Length; i++, j++)
                 span[i] = (byte)message[j % message.Length];
         }
+
         return memory;
     }
 
