@@ -17,6 +17,8 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     private RttStreamingInfo streamInfo;
     private Memory<byte> memory;
     private ulong messageCounter = 0;
+    private int sendCounter = 0;
+    private int receiveCounter = 0;
 
     public AggregationIntervalHandler(HandlerMeteringSettings settings) : base(settings)
     {
@@ -30,10 +32,12 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         memory = InitMemory(_settings.PacketSize, messageCounter);
         
-        ReceivingTask = Task.Run(() => StartReceiving(party, token), token);
+        ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, token), TaskCreationOptions.AttachedToParent);
         while (!token.IsCancellationRequested)
         {
+            Debug.Write("RunWithTimer.SendPart call...", "SendPart");
             RunWithTimer(period, SendPart, party, token);
+            Debug.WriteLine("returned", "SendPart");
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
@@ -44,7 +48,9 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         var period = TimeSpan.FromMilliseconds(_settings.Interval);
         while (!token.IsCancellationRequested)
         {
+            Debug.Write("RunWithTimer.ReceivePart call...", "ReceivePart");
             RunWithTimer(period, ReceivePart, party, token);
+            Debug.WriteLine("returned", "ReceivePart");
             barrierObject.SignalAndWait(token);
         }
         token.ThrowIfCancellationRequested();
@@ -54,20 +60,21 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
-        //redundant check after method return?
-        while (!cts.Token.IsCancellationRequested)
-            function(socket, cts.Token);
+        int iterations = 0;
+        function(socket, cts.Token);
     }
 
     private async Task ReceivePart(Socket party, CancellationToken token)
     {
-        //fine-grained token
+        //fine-grained token - don't throw OCE here
+        receiveCounter = 0;
         while (!token.IsCancellationRequested)
         {
             streamInfo = await ReadStreamData(party, token, streamInfo);
             if (streamInfo.IsDisconnectedPrematurely)
                 throw new DisconnectedPrematurelyException();
 
+            receiveCounter++;
             var message = streamInfo.Message;
             if (_statsMap.TryRemove(message.SequenceNumber, out var stats))
             {
@@ -75,22 +82,27 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
                 notifyBuffer.Add(stats);
             }
         }
+        Debug.WriteLine($"SendPart: {receiveCounter} packets sent");
     }
 
     private async Task SendPart(Socket party, CancellationToken token)
     {
-        //fine-grained token
+        //fine-grained token - don't throw OCE here
+        sendCounter = 0;
         while (!token.IsCancellationRequested)
         {
             var stats = RttStats.WithCurrentTimetrace(messageCounter);
             await party.SendAsync(memory, token);
             _statsMap.TryAdd(messageCounter, stats);
             IncrementCounter(memory.Span, ++messageCounter);
+            sendCounter++;
         }
+        Debug.WriteLine($"SendPart: {sendCounter} packets sent");
     }
 
     private void OnPostPhaseAction(Barrier barrier)
     {
+        Debug.WriteLine($"NotifyBuffer.Count: {notifyBuffer.Count}  (for {_settings.Interval}ms)");
         var stats = new AggregatedRttStats
         {
             AggregationInterval = _settings.Interval,
