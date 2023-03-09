@@ -144,6 +144,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             AggregationInterval = _settings.Interval,
             PacketsCount = notifyBuffer.Count,
             SequenceNumber = notifyBuffer.Min(x => x.SequenceNumber),
+            PhaseNumber = barrierObject.CurrentPhaseNumber,
             AvgRtt = TimeSpan.FromTicks((long)notifyBuffer.Average(x => x.RttValue.Ticks)),
             MinRtt = notifyBuffer.Min(x => x.RttValue),
             MaxRtt = notifyBuffer.Max(x => x.RttValue)

@@ -33,7 +33,7 @@ public class ClientTests
 
             var agStats = eventArgs.AggregatedRttStats.Value;
             Console.WriteLine($"[{nameof(RttMeteringType.AggregationInterval)}]:\n" +
-                              $"\t{agStats.SequenceNumber} ({agStats.PacketsCount} packets for {agStats.AggregationInterval} ms)\n" +
+                              $"\tPhaseNumber: {agStats.PhaseNumber} ({agStats.PacketsCount} packets for {agStats.AggregationInterval} ms)\n" +
                               $"\tMax Rtt: {(agStats.MaxRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.MaxRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.MaxRtt.TotalMicroseconds, 2) + "mks")}\n" +
                               $"\tAvg Rtt: {(agStats.AvgRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.AvgRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.AvgRtt.TotalMicroseconds, 2) + "mks")}\n" +
                               $"\tMin Rtt: {(agStats.MinRtt.TotalMicroseconds > 1000 ? Math.Round(agStats.MinRtt.TotalMilliseconds, 2) + "ms" : Math.Round(agStats.MinRtt.TotalMicroseconds, 2) + "mks")}\n");

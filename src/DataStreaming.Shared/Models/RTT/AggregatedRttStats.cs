@@ -3,9 +3,14 @@ namespace DataStreaming.Models.RTT;
 public struct AggregatedRttStats
 {
     /// <summary>
-    /// Lowest number of arrived packet in a sequence
+    /// Min number of arrived packet in a sequence
     /// </summary>
     public ulong SequenceNumber { get; set; }
+    
+    /// <summary>
+    /// Barrier phase number
+    /// </summary>
+    public long PhaseNumber { get; set; }
 
     /// <summary>
     /// Average RTT in the interval
