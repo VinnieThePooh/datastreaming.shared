@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Diagnostics;
 using System.Net.Sockets;
 using DataStreaming.Constants.RTT;
@@ -38,10 +39,9 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         while (!criticalToken.IsCancellationRequested)
         {
             //don't wait here - we need to stop sending first
-            RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending);
+            var t = RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending);
             barrierObject.SignalAndWait(criticalToken);
         }
-
         criticalToken.ThrowIfCancellationRequested();
     }
 
@@ -51,7 +51,9 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         while (!token.IsCancellationRequested)
         {
             //wait here
-            await RunWithTimer(period, ReceivePart, party, token, HandlingTaskType.Receiving);
+            var effective = await ReceivePart(party, token);
+            if (!effective)
+                continue;
             barrierObject.SignalAndWait(token);
         }
 
@@ -69,28 +71,30 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         }
         catch (OperationCanceledException)
         {
-            Debug.WriteLine($"[{taskType}]: task was cancelled");
+            Debug.WriteLine($"[{taskType}-{barrierObject.CurrentPhaseNumber}]: sending period timed out");
         }
         catch (SocketException se)
         {
             if (se.ErrorCode is 104)
             {
-                Debug.WriteLine("[Critical]: Metering server reseted connection...Cancelling work");
+                Debug.WriteLine($"[Critical-{barrierObject.CurrentPhaseNumber}]: Metering server reseted connection...Cancelling work");
                 criticalCancellationSource.Cancel();
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            //critical
+            var pn = barrierObject.CurrentPhaseNumber;
+            Debug.WriteLine($"[Critical-{pn}]: Unexpected exception: {e}");
+            Debug.WriteLine($"[Critical-{pn}]: Cancelling work");
+            criticalCancellationSource.Cancel();
         }
     }
 
-    private async Task ReceivePart(Socket party, CancellationToken token)
+    private async Task<bool> ReceivePart(Socket party, CancellationToken token)
     {
-        //fine-grained token - don't throw OCE here
         receiveCounter = 0;
-        while (!token.IsCancellationRequested)
+        while (!_statsMap.IsEmpty && !token.IsCancellationRequested)
         {
             streamInfo = await ReadStreamData(party, token, streamInfo);
             if (streamInfo.IsDisconnectedPrematurely)
@@ -105,7 +109,8 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             }
         }
 
-        Debug.WriteLine($"[{HandlingTaskType.Receiving}]: {receiveCounter} packets received");
+        Debug.WriteLine($"[{HandlingTaskType.Receiving}-{barrierObject.CurrentPhaseNumber}]: {receiveCounter} packets received");
+        return receiveCounter > 0;
     }
 
     private async Task SendPart(Socket party, CancellationToken token)
@@ -120,8 +125,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
             IncrementCounter(memory.Span, ++messageCounter);
             sendCounter++;
         }
-
-        Debug.WriteLine($"[{HandlingTaskType.Sending}]: {sendCounter} packets sent");
+        Debug.WriteLine($"[{HandlingTaskType.Sending}-{barrierObject.CurrentPhaseNumber}]: {sendCounter} packets sent");
     }
 
     private void OnPostPhaseAction(Barrier barrier)
