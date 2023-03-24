@@ -36,10 +36,13 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
 
         ReceivingTask = Task.Factory.StartNew(() => StartReceiving(party, criticalToken),
             TaskCreationOptions.AttachedToParent);
+
+        var pair = new ConcurrentExclusiveSchedulerPair();
         while (!criticalToken.IsCancellationRequested)
         {
+            Debug.WriteLine($"[{HandlingTaskType.Sending}-{barrierObject.CurrentPhaseNumber}]: Thread before async awaiting exclusive task: {Thread.CurrentThread.ManagedThreadId}");
             //don't wait here - we need to stop sending first
-            var t = RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending);
+            RunWithTimer(period, SendPart, party, criticalToken, HandlingTaskType.Sending, pair.ExclusiveScheduler);
             barrierObject.SignalAndWait(criticalToken);
         }
         criticalToken.ThrowIfCancellationRequested();
@@ -61,13 +64,16 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
     }
 
     async Task RunWithTimer(TimeSpan period, Func<Socket, CancellationToken, Task> function, Socket socket,
-        CancellationToken token, HandlingTaskType taskType)
+        CancellationToken token, HandlingTaskType taskType, TaskScheduler scheduler = null)
     {
+        scheduler ??= TaskScheduler.Current;
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         cts.CancelAfter(period);
         try
         {
-            await Task.Run(() => function(socket, cts.Token), cts.Token);
+            Debug.WriteLine($"[{HandlingTaskType.Sending}-{barrierObject.CurrentPhaseNumber}]: Thread before async awaiting exclusive task: {Thread.CurrentThread.ManagedThreadId} (duplicate)");
+            await Task.Factory.StartNew(() => function(socket, cts.Token), cts.Token, TaskCreationOptions.HideScheduler, scheduler);
+            Debug.WriteLine($"[{taskType}-{barrierObject.CurrentPhaseNumber}]: Thread after async awaiting exclusive task: {Thread.CurrentThread.ManagedThreadId}");
         }
         catch (OperationCanceledException)
         {
@@ -91,6 +97,7 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         }
     }
 
+    //todo: rewrite to sync version?
     private async Task<bool> ReceivePart(Socket party, CancellationToken token)
     {
         receiveCounter = 0;
@@ -110,6 +117,8 @@ public class AggregationIntervalHandler : RttMeteringHandlerBase
         }
 
         Debug.WriteLine($"[{HandlingTaskType.Receiving}-{barrierObject.CurrentPhaseNumber}]: {receiveCounter} packets received");
+        // Debug.WriteLine($"[{HandlingTaskType.Receiving}-{barrierObject.CurrentPhaseNumber}]: {barrierObject.par}");
+
         return receiveCounter > 0;
     }
 
